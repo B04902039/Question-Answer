@@ -1,0 +1,75 @@
+#:kivy 1.10.0
+#:import kivy kivy
+#:import win kivy.core.window
+
+<LocationScreen>:
+    
+
+<QuestionScreen>:
+    BoxLayout:
+        orientation: 'horizontal'
+        BoxLayout:
+            canvas:
+                Color: 
+                    rgba: 0, 0, 0, 0.3
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            size_hint: (.2, 1)
+            padding: 10
+            orientation: 'vertical'
+            Label: 
+                canvas.before:
+                    Color: 
+                        rgba: .75, .25, .1, 1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                size_hint: (1, .1)
+                font_size: 24
+                color: .95, .95, .8, 1
+                text: root.loc
+                
+                text_size: self.width, None
+                height: self.texture_size[1]
+
+                font_name: 'data/DroidSansFallback.ttf'
+            Button:
+                size_hint: (1, .1)
+                text: 'go to location'
+                on_press:
+                    root.manager.transition.direction = 'left'
+                    root.manager.current = 'location' 
+        BoxLayout:
+            canvas:
+                Color: 
+                    rgba: 0, 0, 0, 0.5
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            size_hint: (.8, 1)
+            padding: 10
+            orientation: 'vertical'
+            Label:
+                size_hint: (1, 3)
+                text: root.Qs
+                font_name: 'data/DroidSansFallback.ttf'
+                
+                text_size: self.width, None
+                height: self.texture_size[1]
+            BoxLayout:
+                orientation: 'horizontal'
+                Button:
+                    text: root.c1
+                    font_name: 'data/DroidSansFallback.ttf'
+                Button:
+                    text: root.c2
+                    font_name: 'data/DroidSansFallback.ttf'
+            BoxLayout:
+                orientation: 'horizontal'
+                Button:
+                    text: root.c3
+                    font_name: 'data/DroidSansFallback.ttf'
+                Button:
+                    text: root.c4
+                    font_name: 'data/DroidSansFallback.ttf'
