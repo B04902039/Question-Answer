@@ -1,6 +1,5 @@
 import kivy
 kivy.require('1.10.0')
-import pandas as pd
 import math
 from random import randint
 from functools import partial
@@ -72,18 +71,14 @@ class TestApp(App):
 Builder.load_file('data/test.kv')
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/questions.csv', encoding='big5', header=None)
-    df.dropna(inplace=True, thresh=10)
-    tmp = df.values
-    for i in range(len(tmp)):
-        for j in range(len(tmp[0])):
-            tmp[i,j] = str(tmp[i,j])
-    for i in range(len(tmp)):
-        if tmp[i,0]!='nan':
-            tmp2 = []
-            for j in range(6):
-                if tmp[i,j*6+1] != 'nan':
-                    tmp2.append(tmp[i,j*6+1:j*6+6])
-            questions[tmp[i, 0]] = tmp2
+    f = open('data/questions.csv', 'r', encoding='big5')
+    data = f.readlines()
+    for row in data:
+        tmp = row.split(',')
+        tmp_ls = []
+        if tmp[0] != '':
+            for i in range(6):
+                tmp_ls.append(tmp[i*6+1:i*6+7])
+            questions[tmp[0]] = tmp_ls
 
     TestApp().run()
