@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['main.py'],
-             pathex=['C:\\Users\\Lo\\Desktop\\portable'],
+             pathex=['C:\\Users\\ù�ں�\\Desktop\\True Desktop\\Quiz&Answer\\bulid_test'],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -25,6 +25,8 @@ exe = EXE(pyz,
           upx=True,
           console=True )
 coll = COLLECT(exe,
+Tree('share\\glew\\bin\\'),
+Tree('share\\sdl2\\bin\\'),
                a.binaries,
                a.zipfiles,
                a.datas,
