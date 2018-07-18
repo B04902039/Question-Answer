@@ -9,9 +9,13 @@ questions={}
 gameBroad = board(school_locations)
 
 class LocationScreen(Screen):
+    '''
+        location screen (deprecated feature)
+        select the location and switch the questions screen
+    '''
     def __init__(self, **kwargs):
         super(LocationScreen, self).__init__(**kwargs)
-    
+    # create button dynamically according to locations in csv
     def create_button(self):
         layout = GridLayout(cols=2, padding=50, spacing=1)
         for i in questions.keys():
@@ -27,6 +31,11 @@ class LocationScreen(Screen):
         self.manager.current = 'question'
 
 class QuestionScreen(Screen):
+    '''
+        Question screen:
+        Qs is the question, c1-c4 are possible choices
+        cd is the countdown object, limit is the time limit
+    '''
     current_ques = ObjectProperty()
     correct_id = NumericProperty()
     limit = NumericProperty(10)
@@ -48,6 +57,7 @@ class QuestionScreen(Screen):
             self.cd.cancel()
 
     def update(self):
+        global questions    # question asked, delete it
         tmp = questions[self.loc]
         if len(tmp) == 0:
             self.limit = 10
@@ -67,7 +77,6 @@ class QuestionScreen(Screen):
             self.c2 = self.current_ques[1]
             self.c3 = self.current_ques[2]
             self.c4 = self.current_ques[3]
-            global questions    # question asked, delete it
             questions[self.loc].remove(questions[self.loc][idx])
             self.limit = 10
             if self.cd:
@@ -76,13 +85,13 @@ class QuestionScreen(Screen):
 
     def callback(self, id):
         if id == self.correct_id:
-            self.manager.get_screen('map').update(correct=True)
+            result = self.manager.get_screen('map').update(correct=True)    # return [teamId, status, locId]
+            self.manager.get_screen('result').update(result)
             self.manager.get_screen('correctAnswer').description = self.description
             self.manager.transition.direction = 'up'
             self.manager.current = 'correctAnswer'
         else:
             correct_answer = self.current_ques[self.correct_id]
-            self.manager.get_screen('map').update(correct=False)
             self.manager.get_screen('wrongAnswer').correct_answer = correct_answer
             self.manager.get_screen('wrongAnswer').description = self.description
             self.manager.transition.direction = 'down'
@@ -95,8 +104,7 @@ class CorrectAnswerScreen(Screen):
     
     def callback(self):
         Logger.info(self.description)
-        self.manager.get_screen('map').enter()
-        self.manager.current = 'map'
+        self.manager.current = 'result'
 
 class WrongAnswerScreen(Screen):
     correct_answer = StringProperty()
@@ -145,8 +153,7 @@ class MapScreen(Screen):
         self.currentPlayer %= 6
         turnPop = Popup(title = 'Next!',
                         content = Label(text = '第{}組的回合!'.format(self.currentPlayer+1),
-                        font_name = 'data/DroidSansFallback.ttf', 
-                        font_size = 32),
+                        font_name = 'data/DroidSansFallback.ttf', font_size = 32),
                         size_hint = (.6,.3))
         Clock.schedule_once(turnPop.dismiss, 1)
         turnPop.open()
@@ -158,21 +165,33 @@ class MapScreen(Screen):
         Logger.info(self.diceSum)
         # move chess
         self.moveChess(self.currentPlayer, self.dice1+self.dice2)
-        next_loc = school_locations[gameBroad.players[self.currentPlayer].current_location]
+        self.next_loc_id = gameBroad.players[self.currentPlayer].current_location
+        next_loc = school_locations[self.next_loc_id]
         rulePop = Popup(title = self.diceSum,
                         content = Label(text = '第{}組前進{}格,到{}'.format(self.currentPlayer+1, self.diceSum, next_loc),
-                        font_name = 'data/DroidSansFallback.ttf', 
-                        font_size = 32),                   
+                        font_name = 'data/DroidSansFallback.ttf', font_size = 32),                   
                         size_hint = (.6, .3))
         Clock.schedule_once(rulePop.dismiss, 1)
-        if next_loc in questions.keys():
+
+        if gameBroad.blocks[self.next_loc_id].status >= 3:   # the location has been dominated
+            dominatePop = Popup(title = '!', 
+                        content = Label(text = '{}已經被第{}組永久佔領!'.format(next_loc, gameBroad.blocks[self.next_loc_id].dominator),
+                        font_name = 'data/DroidSansFallback.ttf', font_size = 32),
+                        size_hint = (.6, .3))
+            #Clock.schedule_once(dominatePop.dismiss, 1)
+            dominatePop.open()
+            self.enter()
+        elif next_loc in questions.keys():
             rulePop.bind(on_dismiss = lambda x: self.startQuestion(self.currentPlayer, next_loc))
         else:
             self.enter()
         rulePop.open()
 
     def update(self, correct):
-        pass
+        # the question is answered correctly, update gamebroad
+        # return [teamId, status, locId]
+        if correct:
+            return gameBroad.blocks[self.next_loc_id].update(self.currentPlayer)
 
     def moveChess(self, player_id, moves):
         gameBroad.move_chess(player_id, moves)
@@ -183,4 +202,27 @@ class MapScreen(Screen):
         self.manager.transition.direction = 'right'
         self.manager.current = 'question'
 
+class ResultScreen(Screen):
+    player = NumericProperty()
+    action = StringProperty()
+    location = StringProperty()
+    score = NumericProperty()
+    def __init__(self, **kwargs):
+        super(ResultScreen, self).__init__(**kwargs)
     
+    def update(self, result):
+        # result: [player, status, locationId]
+        gameBroad.updateScore()
+        if result[1] == 1:
+            self.action = '佔領'
+        elif result[1] == 2:
+            self.action = '衛冕'
+        elif result[1] == 3:
+            self.action = '永久佔領'
+        self.player = result[0]
+        self.location = school_locations[result[2]]
+        self.score = gameBroad.players[self.player].score
+    
+    def callback(self):
+        self.manager.get_screen('map').enter()
+        self.manager.current = 'map'

@@ -41,25 +41,36 @@ class block(object):
     location_name = ''
     id = -1
     current_player = set()
-    current_domination = {
-        'player': '',
-        'status': 0,
-    }
+    dominator = -1
+    status = 0
     def __init__(self, i, name):
         self.id = i
         self.location_name = name
+    
+    def update(self, player_id):
+        if self.dominator==player_id and self.status<3:
+            self.status += 1
+            if self.status == 3:    # dominated
+                #self.status = 100
+                pass
+        elif self.status != 3:
+            self.dominator = player_id
+            self.status = 1
+        else:
+            Logger.info('{} is dominated by team {}'.format(self.location_name, self.player_id))
+        return [self.dominator, self.status, self.id]
 
 class player(object):
     id = -1
     current_location = -1
+    score = 0
     def __init__(self, i):
         self.id = i
         self.current_location = 0
-    
     def __str__(self):
-        return str((self.id, self.current_location))
+        return str((self.id, self.current_location, self.score))
     def __repr__(self):
-        return str((self.id, self.current_location))
+        return str((self.id, self.current_location, self.score))
 
 class board(object):
     blocks = []
@@ -80,3 +91,12 @@ class board(object):
         # player arrive on new block
         self.blocks[self.players[player_id].current_location].current_player.add(player_id)
         Logger.info(self.players)
+    
+    def updateScore(self):
+        for player in self.players:
+            player.score = 0
+        for blk in self.blocks:
+            self.players[blk.dominator].score += blk.status
+        
+        for i in self.players:
+            Logger.info(i)

@@ -13,6 +13,7 @@ class TestApp(App):
         ls.create_button()
         sm.add_widget(CorrectAnswerScreen(name='correctAnswer'))
         sm.add_widget(WrongAnswerScreen(name='wrongAnswer'))
+        sm.add_widget(ResultScreen(name='result'))
         return sm
 
 if __name__ == '__main__':

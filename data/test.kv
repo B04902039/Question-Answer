@@ -152,11 +152,11 @@
                 Rectangle:
                     pos: self.pos
                     size: self.size
-            text: str('正確答案!\n\n'+root.description)
+            text: str('挑戰成功!\n\n'+root.description)
             size_hint: (1, .8)
             text_size: self.width, None
         ChineseButton:
-            text: '回到地圖'
+            text: '確認結果'
             size_hint: (1, .2)
             on_release:
                 root.callback()
@@ -180,7 +180,7 @@
                 Rectangle:
                     pos: self.pos
                     size: self.size
-            text: str('答錯了!\n正確答案是: '+root.correct_answer+'\n\n'+root.description)
+            text: str('挑戰失敗!\n正確答案是: '+root.correct_answer+'\n\n'+root.description)
             size_hint: (1, .8)
             text_size: self.width, None
         ChineseButton:
@@ -254,3 +254,23 @@
                         root.startGame()
         ChineseLabel:
             text: '遊戲規則'
+
+<ResultScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 50
+        ChineseLabel:
+            text: '恭喜第' + str(root.player+1) + '組'
+        ChineseLabel:
+            text: root.action + root.location
+        BoxLayout:
+            orientation: 'horizontal'
+            padding: 30
+            spacing: 10
+            ChineseLabel:
+                text: '目前總分: ' + str(root.score)
+            ChineseButton:
+                text: '繼續'
+                on_release:
+                    root.callback()
+        
