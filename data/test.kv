@@ -1,6 +1,48 @@
 #:kivy 1.10.0
 #:import kivy kivy
 #:import win kivy.core.window
+#:import Factory kivy.factory.Factory
+
+## the first charator of custom class must be upper class
+<ChineseLabel@Label>:
+    font_size: 24
+    font_name: 'data/DroidSansFallback.ttf'
+<ChineseButton@Button>:
+    font_name: 'data/DroidSansFallback.ttf'
+
+<MapScreen>:
+    ## pos_hint is from bottom left corner           
+    ## size_hint is (width, height)
+    FloatLayout:
+        canvas.before:
+            Rectangle:
+                pos: self.pos
+                size: self.size
+                source: 'data/images/map_resized.png'
+        BoxLayout:
+            padding: 10
+            spacing: 10
+            canvas.before:
+                Color:
+                    rgba: 1, 1, 1, 0.5
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            size_hint: (0.3, 0.5)
+            pos_hint: {'x': 0.5, 'y': 0.25}
+            orientation: 'vertical'
+            Button:
+                text: 'go select loc'
+                on_release:
+                    root.manager.current = 'location'
+            Button:
+                text: 'roll the dice'
+                on_release:
+                    root.rollDice()
+            Label:
+                text: root.diceSum
+                font_size: 24
+                color: 0, 0, 0, 1
 
 <LocationScreen>:
     
@@ -9,37 +51,32 @@
     BoxLayout:
         orientation: 'horizontal'
         BoxLayout:
-            canvas:
-                Color: 
-                    rgba: 0, 0, 0, 0.3
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
             size_hint: (.2, 1)
             padding: 10
+            spacing: 10
             orientation: 'vertical'
-            Label: 
+            ChineseLabel:
+                ## the location label
                 canvas.before:
                     Color: 
+                        ## red orange
                         rgba: .75, .25, .1, 1
                     Rectangle:
                         pos: self.pos
                         size: self.size
                 size_hint: (1, .1)
                 font_size: 24
-                color: .95, .95, .8, 1
                 text: root.loc
-                
                 text_size: self.width, None
                 height: self.texture_size[1]
-
-                font_name: 'data/DroidSansFallback.ttf'
-            Button:
+            ChineseButton:
+                ## go back button
                 size_hint: (1, .1)
+                background_color: 0.3, 0.9, 0.95, 1
                 text: 'go to location'
                 on_press:
                     root.manager.transition.direction = 'left'
-                    root.manager.current = 'location' 
+                    root.manager.current = 'location'
         BoxLayout:
             canvas:
                 Color: 
@@ -49,27 +86,158 @@
                     size: self.size
             size_hint: (.8, 1)
             padding: 10
+            spacing: 10
             orientation: 'vertical'
-            Label:
+            ChineseLabel:
+                ## the question
                 size_hint: (1, 3)
                 text: root.Qs
-                font_name: 'data/DroidSansFallback.ttf'
-                
+                font_size: 24
                 text_size: self.width, None
                 height: self.texture_size[1]
             BoxLayout:
                 orientation: 'horizontal'
-                Button:
+                padding: 5
+                spacing: 5
+                ChineseButton:
                     text: root.c1
-                    font_name: 'data/DroidSansFallback.ttf'
-                Button:
+                    on_release:
+                        root.callback(0)
+                ChineseButton:
                     text: root.c2
-                    font_name: 'data/DroidSansFallback.ttf'
+                    on_release:
+                        root.callback(1)
             BoxLayout:
                 orientation: 'horizontal'
-                Button:
+                padding: 5
+                spacing: 5
+                ChineseButton:
                     text: root.c3
-                    font_name: 'data/DroidSansFallback.ttf'
-                Button:
+                    on_release:
+                        root.callback(2)
+                ChineseButton:
                     text: root.c4
-                    font_name: 'data/DroidSansFallback.ttf'
+                    on_release:
+                        root.callback(3)
+
+<CorrectAnswerScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 10
+        spacing: 10
+        canvas:
+            Color:
+                rgba: 0, 0, 0, 0.3
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        ChineseLabel:
+            canvas.before:
+                Color:
+                    ## green background
+                    rgba: 0.15, 0.9, 0.1, 0.5
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            text: root.description
+            size_hint: (1, .8)
+            text_size: self.width, None
+        ChineseButton:
+            text: 'go back and select location'
+            size_hint: (1, .2)
+            on_release:
+                root.callback()
+
+<WrongAnswerScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 10
+        spacing: 10
+        canvas:
+            Color:
+                rgba: 0, 0, 0, 0.3
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        ChineseLabel:
+            canvas.before:
+                Color:
+                    ## red background
+                    rgba: 0.9, 0.1, 0.125, 0.5
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            text: root.description
+            size_hint: (1, .8)
+            text_size: self.width, None
+        ChineseButton:
+            text: 'go back and select location'
+            size_hint: (1, .2)
+            on_release:
+                root.callback()
+
+<TitleScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 30
+        spacing: 10
+        ChineseLabel:
+            font_size: 72
+            text: '台大大富翁'
+        BoxLayout:
+            orientation: 'horizontal'
+            padding: 50
+            spacing: 30
+            ChineseButton:
+                text: '規則說明'
+                on_release:
+                    root.gotoInfo()
+            ChineseButton:
+                text: '開始遊戲'
+                on_release:
+                    root.startGame()
+
+<InfoScreen>:
+    BoxLayout:
+        orientation: 'horizontal'
+        padding: 30
+        spacing: 10
+        BoxLayout:
+            orientation: 'vertical'
+            padding: 10
+            spacing: 10
+            ChineseLabel:
+                ## pink
+                canvas.before:
+                    Color:
+                        rgba: 0.9, 0.1, 0.9, 0.7
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                text: '勝利條件'
+            ChineseLabel:
+                ## orange
+                canvas.before:
+                    Color:
+                        rgba: 0.95, 0.6, 0.3, 0.7
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                text: '小提示'
+            BoxLayout:
+                orientation: 'horizontal'
+                spacing: 10
+                ChineseButton:
+                    ## light blue
+                    background_color: 0.3, 0.9, 0.95, 1
+                    text: '回上一頁'
+                    on_release:
+                        root.goback()
+                ChineseButton:
+                    ## light blue
+                    background_color: 0.3, 0.9, 0.95, 1
+                    text: '開始遊戲'
+                    on_release:
+                        root.startGame()
+        ChineseLabel:
+            text: '遊戲規則'
