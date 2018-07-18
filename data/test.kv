@@ -6,9 +6,18 @@
 ## the first charator of custom class must be upper class
 <ChineseLabel@Label>:
     font_size: 24
+    text_size: self.size
+    halign: 'center'
+    valign: 'center'
     font_name: 'data/DroidSansFallback.ttf'
 <ChineseButton@Button>:
+    font_size: 20
+    text_size: self.size
+    halign: 'center'
+    valign: 'center'
     font_name: 'data/DroidSansFallback.ttf'
+
+<CountDownLabel>:
 
 <MapScreen>:
     ## pos_hint is from bottom left corner           
@@ -31,15 +40,15 @@
             size_hint: (0.3, 0.5)
             pos_hint: {'x': 0.5, 'y': 0.25}
             orientation: 'vertical'
-            Button:
-                text: 'go select loc'
+            ChineseButton:
+                text: '直接選擇地點'
                 on_release:
                     root.manager.current = 'location'
-            Button:
-                text: 'roll the dice'
+            ChineseButton:
+                text: '擲骰子!'
                 on_release:
                     root.rollDice()
-            Label:
+            ChineseLabel:
                 text: root.diceSum
                 font_size: 24
                 color: 0, 0, 0, 1
@@ -64,16 +73,20 @@
                     Rectangle:
                         pos: self.pos
                         size: self.size
-                size_hint: (1, .1)
+                size_hint: (1, .4)
                 font_size: 24
                 text: root.loc
                 text_size: self.width, None
                 height: self.texture_size[1]
+            Label:
+                size_hint: (1, .2)
+                text: str(round(root.limit, 1))
+                font_size: 32
             ChineseButton:
                 ## go back button
-                size_hint: (1, .1)
+                size_hint: (1, .4)
                 background_color: 0.3, 0.9, 0.95, 1
-                text: 'go to location'
+                text: '選其他地點'
                 on_press:
                     root.manager.transition.direction = 'left'
                     root.manager.current = 'location'
@@ -123,7 +136,7 @@
 <CorrectAnswerScreen>:
     BoxLayout:
         orientation: 'vertical'
-        padding: 10
+        padding: 50
         spacing: 10
         canvas:
             Color:
@@ -139,11 +152,11 @@
                 Rectangle:
                     pos: self.pos
                     size: self.size
-            text: root.description
+            text: str('正確答案!\n\n'+root.description)
             size_hint: (1, .8)
             text_size: self.width, None
         ChineseButton:
-            text: 'go back and select location'
+            text: '回到地圖'
             size_hint: (1, .2)
             on_release:
                 root.callback()
@@ -151,7 +164,7 @@
 <WrongAnswerScreen>:
     BoxLayout:
         orientation: 'vertical'
-        padding: 10
+        padding: 50
         spacing: 10
         canvas:
             Color:
@@ -167,11 +180,11 @@
                 Rectangle:
                     pos: self.pos
                     size: self.size
-            text: root.description
+            text: str('答錯了!\n正確答案是: '+root.correct_answer+'\n\n'+root.description)
             size_hint: (1, .8)
             text_size: self.width, None
         ChineseButton:
-            text: 'go back and select location'
+            text: '回到地圖'
             size_hint: (1, .2)
             on_release:
                 root.callback()
