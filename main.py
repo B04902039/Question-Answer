@@ -15,6 +15,7 @@ class TestApp(App):
         sm.add_widget(CorrectAnswerScreen(name='correctAnswer'))
         sm.add_widget(WrongAnswerScreen(name='wrongAnswer'))
         sm.add_widget(ResultScreen(name='result'))
+        sm.add_widget(EndScreen(name='end'))
         return sm
 
 if __name__ == '__main__':

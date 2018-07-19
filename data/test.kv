@@ -11,6 +11,8 @@
     valign: 'center'
     font_name: 'data/DroidSansFallback.ttf'
 <ChineseButton@Button>:
+    ##background_normal: 'data/images/normal.png'
+    ##background_down: 'data/images/down.png'
     font_size: 20
     text_size: self.size
     halign: 'center'
@@ -41,9 +43,9 @@
             pos_hint: {'x': 0.5, 'y': 0.25}
             orientation: 'vertical'
             ChineseButton:
-                text: '直接選擇地點'
+                text: '確認分數 or 結束遊戲'
                 on_release:
-                    root.manager.current = 'location'
+                    root.manager.current = 'end'
             ChineseButton:
                 text: '擲骰子!'
                 on_release:
@@ -271,4 +273,66 @@
                 text: '繼續'
                 on_release:
                     root.callback()
-        
+
+<EndScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 30
+        spacing: 30
+        GridLayout:
+            size_hint: (1, .8)
+            cols: 3
+            spacing: 5
+            ChineseLabel:
+                canvas.before:
+                    Color:
+                        rgba: root.background_color[0]
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                text: '第1組:\n' + str(root.score1) + '分'
+            ChineseLabel:
+                canvas.before:
+                    Color:
+                        rgba: root.background_color[1]
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                text: '第2組:\n'+ str(root.score2) +'分'
+            ChineseLabel:
+                canvas.before:
+                    Color:
+                        rgba: root.background_color[2]
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                text: '第3組:\n'+ str(root.score3) +'分'
+            ChineseLabel:
+                canvas.before:
+                    Color:
+                        rgba: root.background_color[3]
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                text: '第4組:\n'+ str(root.score4) +'分'
+            ChineseLabel:
+                canvas.before:
+                    Color:
+                        rgba: root.background_color[4]
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                text: '第5組:\n'+ str(root.score5) +'分'
+            ChineseLabel:
+                canvas.before:
+                    Color:
+                        rgba: root.background_color[5]
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                text: '第6組:\n'+ str(root.score6) +'分'
+        ChineseButton:
+            size_hint: (1, .2)
+            text: '回地圖繼續'
+            on_release:
+                root.callback()

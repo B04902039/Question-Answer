@@ -7,6 +7,7 @@ school_locations = ['起點', '校門口', 'N號館', '傅鐘', '校史館', '�
 '實驗林場', '臺大農場', '舟山路', '小小福', '二活', '機會', '椰林小舖', '宿舍區', '桃花心木道']
 questions={}
 gameBroad = board(school_locations)
+colors = [(1, 0, 0, .5), (1, 1, 0, .5), (0, 1, 0, .5), (0, 1, 1, .5), (0, 0, 1 , .5), (1, 0, 1, .5)]
 
 class LocationScreen(Screen):
     '''
@@ -59,7 +60,7 @@ class QuestionScreen(Screen):
             self.__cd.cancel()
             self.__timeout()
     
-    def __back_to_map(self, instance):    # instance is the instance binded with this callback func
+    def back_to_map(self, instance):    # instance is the instance binded with this callback func
         #Logger.info(instance)
         self.manager.get_screen('map').enter()
         self.manager.current = 'map'
@@ -72,7 +73,7 @@ class QuestionScreen(Screen):
         poplayout.add_widget(bt)
         timeoutPop = Popup(title='Time out!', content=poplayout, size_hint = (.6,.5), auto_dismiss=False)
         bt.bind(on_release = timeoutPop.dismiss)
-        timeoutPop.bind(on_dismiss = self.__back_to_map)
+        timeoutPop.bind(on_dismiss = self.back_to_map)
         timeoutPop.open()
     
     def __reset_time(self):
@@ -222,8 +223,8 @@ class MapScreen(Screen):
         turnPop.open()
     
     def rollDice(self):
-        self.dice1 = 5#randint(1, 6)
-        self.dice2 = 5#randint(1, 6)
+        self.dice1 = randint(1, 6)
+        self.dice2 = randint(1, 6)
         self.diceSum = str(self.dice1 + self.dice2)
         Logger.info(self.diceSum)
         # move chess
@@ -301,4 +302,27 @@ class ResultScreen(Screen):
     
     def callback(self):
         self.manager.get_screen('map').enter()
+        self.manager.current = 'map'
+
+class EndScreen(Screen):
+    background_color = ObjectProperty()
+    background_color = colors
+    score1 = NumericProperty()
+    score2 = NumericProperty()
+    score3 = NumericProperty()
+    score4 = NumericProperty()
+    score5 = NumericProperty()
+    score6 = NumericProperty()
+    def __init__(self, **kwargs):
+        super(EndScreen, self).__init__(**kwargs)
+    
+    def on_enter(self):
+        self.score1 = gameBroad.players[0].score
+        self.score2 = gameBroad.players[1].score
+        self.score3 = gameBroad.players[2].score
+        self.score4 = gameBroad.players[3].score
+        self.score5 = gameBroad.players[4].score
+        self.score6 = gameBroad.players[5].score
+    
+    def callback(self):
         self.manager.current = 'map'

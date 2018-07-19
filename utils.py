@@ -12,18 +12,20 @@ from kivy.uix.label import Label
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
-from kivy.properties import ObjectProperty, StringProperty, NumericProperty
+from kivy.properties import ObjectProperty, StringProperty, NumericProperty, ListProperty
 from kivy.logger import Logger
 from kivy.animation import Animation
 from kivy.uix.popup import Popup
 from kivy.clock import Clock
 import kivy.resources
 kivy.resources.resource_add_path('.')
-
+'''
 school_locations = ['起點', '校門口', 'N號館', '傅鐘', '校史館', '行政大樓', '文學院', '機會', 
 '溫州街', '社科院', '小福', '工綜', '農業陳列館', '醉月湖', '水源校區', '機會', '法學院', '活大', 
 '118巷', '機會', '土木系館', '總圖', '機會', '教學館', '城中校區', '體育館', '公館商圈', 
 '實驗林場', '臺大農場', '舟山路', '小小福', '二活', '機會', '椰林小舖', '宿舍區', '桃花心木道']
+'''
+colors = [(1, 0, 0, 1), (1, 1, 0, 1), (0, 1, 0, 1), (0, 1, 1, 1), (0, 0, 1 ,1), (1, 0, 1, 1)]
 
 def shuffleChoice(choice):
     # shuffle the list in place and return the index of the true answer
@@ -57,7 +59,7 @@ class block(object):
             self.dominator = player_id
             self.status = 1
         else:
-            Logger.info('{} is dominated by team {}'.format(self.location_name, self.player_id))
+            Logger.info('{} is dominated by team {}'.format(self.location_name, self.dominator))
         return [self.dominator, self.status, self.id]
 
 class player(object):
@@ -66,6 +68,7 @@ class player(object):
     score = 0
     def __init__(self, i):
         self.id = i
+        self.color = colors[self.id]
         self.current_location = 0
     def __str__(self):
         return str((self.id, self.current_location, self.score))
@@ -97,6 +100,5 @@ class board(object):
             player.score = 0
         for blk in self.blocks:
             self.players[blk.dominator].score += blk.status
-        
         for i in self.players:
             Logger.info(i)
