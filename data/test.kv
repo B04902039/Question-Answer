@@ -58,8 +58,10 @@
 
 <QuestionScreen>:
     BoxLayout:
+        id: mainLayout
         orientation: 'horizontal'
         BoxLayout:
+            id: leftLayout
             size_hint: (.2, 1)
             padding: 10
             spacing: 10
@@ -79,17 +81,10 @@
                 text_size: self.width, None
                 height: self.texture_size[1]
             Label:
+                id: timer
                 size_hint: (1, .2)
                 text: str(round(root.limit, 1))
                 font_size: 32
-            ChineseButton:
-                ## go back button
-                size_hint: (1, .4)
-                background_color: 0.3, 0.9, 0.95, 1
-                text: '選其他地點'
-                on_press:
-                    root.manager.transition.direction = 'left'
-                    root.manager.current = 'location'
         BoxLayout:
             canvas:
                 Color: 
@@ -132,6 +127,9 @@
                     text: root.c4
                     on_release:
                         root.callback(3)
+
+<DualScreen>:
+    
 
 <CorrectAnswerScreen>:
     BoxLayout:

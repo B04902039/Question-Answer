@@ -10,6 +10,7 @@ class TestApp(App):
         ls = LocationScreen(name='location')
         sm.add_widget(ls)
         sm.add_widget(QuestionScreen(name='question'))
+        sm.add_widget(DualScreen(name='dual'))
         ls.create_button()
         sm.add_widget(CorrectAnswerScreen(name='correctAnswer'))
         sm.add_widget(WrongAnswerScreen(name='wrongAnswer'))

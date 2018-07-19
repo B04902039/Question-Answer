@@ -39,30 +39,52 @@ class QuestionScreen(Screen):
     current_ques = ObjectProperty()
     correct_id = NumericProperty()
     limit = NumericProperty(10)
+    playerID = NumericProperty()
     loc = StringProperty()
     Qs = StringProperty()
     c1 = StringProperty()
     c2 = StringProperty()
     c3 = StringProperty()
     c4 = StringProperty()
-    cd = ObjectProperty()
+    __cd = ObjectProperty()
     description = StringProperty()
     def __init__(self, **kwargs):
         super(QuestionScreen, self).__init__(**kwargs)
 
     def tic(self, dt):
+        #Logger.info(str(self.limit))
         if self.limit > 0.1:
             self.limit -= 0.1
         else:
-            self.cd.cancel()
+            self.__cd.cancel()
+            self.__timeout()
+    
+    def __back_to_map(self, instance):    # instance is the instance binded with this callback func
+        #Logger.info(instance)
+        self.manager.get_screen('map').enter()
+        self.manager.current = 'map'
+
+    def __timeout(self):
+        poplayout = BoxLayout(orientation='vertical')
+        lb = Label(text = '時間到!', font_name = 'data/DroidSansFallback.ttf', font_size = 32, size_hint=(1, 0.7))
+        bt = Button(text = '回地圖', font_name = 'data/DroidSansFallback.ttf', font_size = 20, size_hint=(1, 0.3))
+        poplayout.add_widget(lb)
+        poplayout.add_widget(bt)
+        timeoutPop = Popup(title='Time out!', content=poplayout, size_hint = (.6,.5), auto_dismiss=False)
+        bt.bind(on_release = timeoutPop.dismiss)
+        timeoutPop.bind(on_dismiss = self.__back_to_map)
+        timeoutPop.open()
+    
+    def __reset_time(self):
+        self.limit = 10
+        if self.__cd:
+            self.__cd.cancel()
 
     def update(self):
         global questions    # question asked, delete it
         tmp = questions[self.loc]
         if len(tmp) == 0:
-            self.limit = 10
-            if self.cd:
-                self.cd.cancel()
+            self.__reset_time()
             self.Qs = self.c1 = self.c2 = self.c3 = self.c4 = 'Out of questions'
         else:
             #Logger.info(tmp)
@@ -78,14 +100,13 @@ class QuestionScreen(Screen):
             self.c3 = self.current_ques[2]
             self.c4 = self.current_ques[3]
             questions[self.loc].remove(questions[self.loc][idx])
-            self.limit = 10
-            if self.cd:
-                self.cd.cancel()
-            self.cd = Clock.schedule_interval(self.tic, 0.1)
+            self.__reset_time()
+            self.__cd = Clock.schedule_interval(self.tic, 0.1)
 
     def callback(self, id):
+        self.__reset_time()
         if id == self.correct_id:
-            result = self.manager.get_screen('map').update(correct=True)    # return [teamId, status, locId]
+            result = self.manager.get_screen('map').update(self.playerID)    # return [teamId, status, locId]
             self.manager.get_screen('result').update(result)
             self.manager.get_screen('correctAnswer').description = self.description
             self.manager.transition.direction = 'up'
@@ -96,6 +117,48 @@ class QuestionScreen(Screen):
             self.manager.get_screen('wrongAnswer').description = self.description
             self.manager.transition.direction = 'down'
             self.manager.current = 'wrongAnswer'
+
+class DualScreen(QuestionScreen):
+    challenger = NumericProperty(-1)
+    dominator = NumericProperty(-1)
+    playerID = NumericProperty()    # the answerer
+    def __init__(self, **kwargs):
+        super(DualScreen, self).__init__(**kwargs)
+        self.ids.leftLayout.remove_widget(self.ids.timer)
+        buttons_layout = BoxLayout(orientation = 'horizontal', spacing = 10, padding = 10, size_hint = (1, .1))
+        self.button_dominator = Button(font_size = 24)
+        self.button_challenger = Button(font_size = 24)
+        buttons_layout.add_widget(self.button_dominator)
+        buttons_layout.add_widget(self.button_challenger)
+        self.ids.leftLayout.add_widget(buttons_layout)
+
+    def update(self):
+        global questions    # question asked, delete it
+        self.button_challenger.text = str(self.challenger+1)
+        self.button_dominator.text = str(self.dominator+1)
+        self.button_challenger.on_release = partial(self.set_answerer, self.challenger)
+        self.button_dominator.on_release = partial(self.set_answerer, self.dominator)
+        tmp = questions[self.loc]
+        if len(tmp) == 0:
+            self.Qs = self.c1 = self.c2 = self.c3 = self.c4 = 'Out of questions'
+        else:
+            #Logger.info(tmp)
+            idx = randint(0, len(tmp)-1)
+            self.Qs = tmp[idx][0]
+            self.current_ques = tmp[idx][1:5]
+            self.description = tmp[idx][-1]
+            self.manager.get_screen('correctAnswer').description = self.description
+            self.manager.get_screen('wrongAnswer').description = self.description
+            self.correct_id = shuffleChoice(self.current_ques)
+            self.c1 = self.current_ques[0]
+            self.c2 = self.current_ques[1]
+            self.c3 = self.current_ques[2]
+            self.c4 = self.current_ques[3]
+            questions[self.loc].remove(questions[self.loc][idx])
+            # no timer
+    
+    def set_answerer(self, player):
+        self.playerID = player
 
 class CorrectAnswerScreen(Screen):
     description = StringProperty()
@@ -159,8 +222,8 @@ class MapScreen(Screen):
         turnPop.open()
     
     def rollDice(self):
-        self.dice1 = randint(1, 6)
-        self.dice2 = randint(1, 6)
+        self.dice1 = 5#randint(1, 6)
+        self.dice2 = 5#randint(1, 6)
         self.diceSum = str(self.dice1 + self.dice2)
         Logger.info(self.diceSum)
         # move chess
@@ -182,25 +245,38 @@ class MapScreen(Screen):
             dominatePop.open()
             self.enter()
         elif next_loc in questions.keys():
-            rulePop.bind(on_dismiss = lambda x: self.startQuestion(self.currentPlayer, next_loc))
+            if gameBroad.blocks[self.next_loc_id].status == 0:  # no one dominate the block
+                rulePop.bind(on_dismiss = lambda x: self.startQuestion(self.currentPlayer, next_loc))
+            else:
+                rulePop.bind(on_dismiss = lambda x: self.startDual(gameBroad.blocks[self.next_loc_id].dominator, 
+                                                                    self.currentPlayer, next_loc))
         else:
             self.enter()
         rulePop.open()
 
-    def update(self, correct):
+    def update(self, playerID):
         # the question is answered correctly, update gamebroad
         # return [teamId, status, locId]
-        if correct:
-            return gameBroad.blocks[self.next_loc_id].update(self.currentPlayer)
+        return gameBroad.blocks[self.next_loc_id].update(playerID)
 
     def moveChess(self, player_id, moves):
         gameBroad.move_chess(player_id, moves)
 
     def startQuestion(self, player_id, loc):
         self.manager.get_screen('question').loc = loc
+        self.manager.get_screen('question').playerID = player_id
         self.manager.get_screen('question').update()
         self.manager.transition.direction = 'right'
         self.manager.current = 'question'
+
+    def startDual(self, dominator, challenger, loc):
+        Logger.info('challenger:{}, dominator:{}'.format(challenger, dominator))
+        self.manager.get_screen('dual').challenger = challenger
+        self.manager.get_screen('dual').dominator = dominator
+        self.manager.get_screen('dual').loc = loc
+        self.manager.get_screen('dual').update()
+        self.manager.transition.direction = 'right'
+        self.manager.current = 'dual'
 
 class ResultScreen(Screen):
     player = NumericProperty()
