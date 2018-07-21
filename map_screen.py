@@ -8,6 +8,8 @@ class MapScreen(Screen):
     def __init__(self, **kwargs):
         super(MapScreen, self).__init__(**kwargs)
         self.currentPlayer = -1
+
+        self.loc_demo = [0, 0, 0, 0, 0, 0]
     
     def enter(self):
         self.currentPlayer += 1
@@ -18,7 +20,17 @@ class MapScreen(Screen):
                         size_hint = (.6,.3))
         Clock.schedule_once(turnPop.dismiss, 1)
         turnPop.open()
-    
+
+        for i in range(6):
+            self.ids['player_chess_{}'.format(i)].color = colors[i]
+            self.ids['player_chess_{}'.format(i)].rel_pos = get_player_loc(i, 0)
+
+    def update_chess_demo(self, dt):
+        for i in range(6):
+            self.loc_demo[i] = (self.loc_demo[i] + randint(0, 2)) % 36
+            self.ids['player_chess_{}'.format(i)].color = colors[i]
+            self.ids['player_chess_{}'.format(i)].rel_pos = get_player_loc(i, self.loc_demo[i])
+
     def rollDice(self):
         self.dice1 = randint(1, 6)
         self.dice2 = randint(1, 6)
