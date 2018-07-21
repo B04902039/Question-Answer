@@ -19,13 +19,14 @@ from kivy.uix.popup import Popup
 from kivy.clock import Clock
 import kivy.resources
 kivy.resources.resource_add_path('.')
-'''
+
 school_locations = ['起點', '校門口', 'N號館', '傅鐘', '校史館', '行政大樓', '文學院', '機會', 
 '溫州街', '社科院', '小福', '工綜', '農業陳列館', '醉月湖', '水源校區', '機會', '法學院', '活大', 
 '118巷', '機會', '土木系館', '總圖', '機會', '教學館', '城中校區', '體育館', '公館商圈', 
 '實驗林場', '臺大農場', '舟山路', '小小福', '二活', '機會', '椰林小舖', '宿舍區', '桃花心木道']
-'''
+default_font = 'data/DroidSansFallback.ttf'
 colors = [(1, 0, 0, 1), (1, 1, 0, 1), (0, 1, 0, 1), (0, 1, 1, 1), (0, 0, 1 ,1), (1, 0, 1, 1)]
+questions = {}
 
 def shuffleChoice(choice):
     # shuffle the list in place and return the index of the true answer
@@ -102,3 +103,6 @@ class board(object):
             self.players[blk.dominator].score += blk.status
         for i in self.players:
             Logger.info(i)
+
+
+gameBroad = board(school_locations)
