@@ -9,6 +9,15 @@
 
 ## the first charator of custom class must be upper class
 
+<PlayerChess>:
+    canvas:
+        Color:
+            rgba: self.color
+        Rectangle:
+            pos: (root.width * self.rel_pos['x'], root.height * self.rel_pos['y'])
+            size: (root.width / 50, root.width / 50)
+            source: 'data/images/chess_icon_white.png'
+
 <MapScreen>:
     ## pos_hint is from bottom left corner           
     ## size_hint is (width, height)
@@ -42,6 +51,18 @@
                 text: root.diceSum
                 font_size: 24
                 color: 0, 0, 0, 1
+    PlayerChess:
+        id: player_chess_0
+    PlayerChess:
+        id: player_chess_1
+    PlayerChess:
+        id: player_chess_2
+    PlayerChess:
+        id: player_chess_3
+    PlayerChess:
+        id: player_chess_4
+    PlayerChess:
+        id: player_chess_5
 
 <CorrectAnswerScreen>:
     BoxLayout:

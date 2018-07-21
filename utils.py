@@ -12,12 +12,14 @@ from kivy.uix.label import Label
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
-from kivy.properties import ObjectProperty, StringProperty, NumericProperty, ListProperty
+from kivy.properties import ObjectProperty, StringProperty, NumericProperty, ListProperty, ReferenceListProperty
+from kivy.vector import Vector
 from kivy.logger import Logger
 from kivy.animation import Animation
 from kivy.uix.popup import Popup
 from kivy.clock import Clock
 import kivy.resources
+import grid_constants
 kivy.resources.resource_add_path('.')
 
 school_locations = ['起點', '校門口', 'N號館', '傅鐘', '校史館', '行政大樓', '文學院', '機會', 
@@ -63,6 +65,13 @@ class block(object):
             Logger.info('{} is dominated by team {}'.format(self.location_name, self.dominator))
         return [self.dominator, self.status, self.id]
 
+class PlayerChess(Widget):
+    color = ListProperty()
+    rel_pos = ObjectProperty({'x': 0, 'y': 0})
+
+    def move():
+        pass
+
 class player(object):
     id = -1
     current_location = -1
@@ -104,5 +113,9 @@ class board(object):
         for i in self.players:
             Logger.info(i)
 
+def get_player_loc(player_id, block_id):
+    x = grid_constants.grid_loc[block_id]['x'] + grid_constants.player_offset[player_id]['x']
+    y = grid_constants.grid_loc[block_id]['y'] + grid_constants.player_offset[player_id]['y']
+    return {'x': x, 'y': y}
 
 gameBroad = board(school_locations)
