@@ -20,13 +20,13 @@ class MapScreen(Screen):
         turnPop.open()
     
     def rollDice(self):
-        self.dice1 = 5#randint(1, 6)
-        self.dice2 = 5#randint(1, 6)
+        self.dice1 = randint(1, 6)
+        self.dice2 = randint(1, 6)
         self.diceSum = str(self.dice1 + self.dice2)
         Logger.info(self.diceSum)
         # move chess
         self.moveChess(self.currentPlayer, self.dice1+self.dice2)
-        self.next_loc_id = gameBroad.players[self.currentPlayer].current_location
+        self.next_loc_id = gameboard.players[self.currentPlayer].current_location
         next_loc = school_locations[self.next_loc_id]
         rulePop = Popup(title = self.diceSum,
                         content = Label(text = '第{}組前進{}格,到{}'.format(self.currentPlayer+1, self.diceSum, next_loc),
@@ -34,17 +34,18 @@ class MapScreen(Screen):
                         size_hint = (.6, .3))
         Clock.schedule_once(rulePop.dismiss, 1)
 
-        if gameBroad.blocks[self.next_loc_id].status >= 3:   # the location has been dominated
+        if gameboard.blocks[self.next_loc_id].status >= 3:   # the location has been dominated
             dominatePop = Popup(title = '!', 
-                        content = Label(text = '{}已經被第{}組永久佔領!'.format(next_loc, gameBroad.blocks[self.next_loc_id].dominator),
+                        content = Label(text = '{}已經被第{}組永久佔領!'.format(next_loc, gameboard.blocks[self.next_loc_id].dominator+1),
                         font_name = default_font, font_size = 32),
                         size_hint = (.6, .3))
             dominatePop.open()
-            self.enter()
+            dominatePop.on_dismiss = self.enter
+            #self.enter()
         elif next_loc in questions.keys():
             # other team is the dominator
-            if gameBroad.blocks[self.next_loc_id].status > 0 and gameBroad.blocks[self.next_loc_id].dominator != self.currentPlayer:
-                rulePop.bind(on_dismiss = lambda x: self.startDual(gameBroad.blocks[self.next_loc_id].dominator, 
+            if gameboard.blocks[self.next_loc_id].status > 0 and gameboard.blocks[self.next_loc_id].dominator != self.currentPlayer:
+                rulePop.bind(on_dismiss = lambda x: self.startDual(gameboard.blocks[self.next_loc_id].dominator, 
                                                                     self.currentPlayer, next_loc))
             else:  # no one dominate the block
                 rulePop.bind(on_dismiss = lambda x: self.startQuestion(self.currentPlayer, next_loc))
@@ -53,12 +54,12 @@ class MapScreen(Screen):
         rulePop.open()
 
     def update(self, playerID):
-        # the question is answered correctly, update gamebroad
+        # the question is answered correctly, update gameboard
         # return [teamId, status, locId]
-        return gameBroad.blocks[self.next_loc_id].update(playerID)
+        return gameboard.blocks[self.next_loc_id].update(playerID)
 
     def moveChess(self, player_id, moves):
-        gameBroad.move_chess(player_id, moves)
+        gameboard.move_chess(player_id, moves)
 
     def startQuestion(self, player_id, loc):
         self.manager.get_screen('question').loc = loc

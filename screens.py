@@ -84,7 +84,7 @@ class ResultScreen(Screen):
     
     def update(self, result):
         # result: [player, status, locationId]
-        gameBroad.updateScore()
+        gameboard.updateScore()
         if result[1] == 1:
             self.action = '佔領'
         elif result[1] == 2:
@@ -93,7 +93,7 @@ class ResultScreen(Screen):
             self.action = '永久佔領'
         self.player = result[0]
         self.location = school_locations[result[2]]
-        self.score = gameBroad.players[self.player].score
+        self.score = gameboard.players[self.player].score
     
     def callback(self):
         self.manager.get_screen('map').enter()
@@ -112,12 +112,13 @@ class EndScreen(Screen):
         super(EndScreen, self).__init__(**kwargs)
     
     def on_enter(self):
-        self.score1 = gameBroad.players[0].score
-        self.score2 = gameBroad.players[1].score
-        self.score3 = gameBroad.players[2].score
-        self.score4 = gameBroad.players[3].score
-        self.score5 = gameBroad.players[4].score
-        self.score6 = gameBroad.players[5].score
+        gameboard.updateScore()
+        self.score1 = gameboard.players[0].score
+        self.score2 = gameboard.players[1].score
+        self.score3 = gameboard.players[2].score
+        self.score4 = gameboard.players[3].score
+        self.score5 = gameboard.players[4].score
+        self.score6 = gameboard.players[5].score
     
     def callback(self):
         self.manager.current = 'map'

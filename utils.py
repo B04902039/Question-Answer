@@ -105,4 +105,4 @@ class board(object):
             Logger.info(i)
 
 
-gameBroad = board(school_locations)
+gameboard = board(school_locations)
