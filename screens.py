@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from utils import *
 
+default_font = 'data/DroidSansFallback.ttf'
 school_locations = ['起點', '校門口', 'N號館', '傅鐘', '校史館', '行政大樓', '文學院', '機會', 
 '溫州街', '社科院', '小福', '工綜', '農業陳列館', '醉月湖', '水源校區', '機會', '法學院', '活大', 
 '118巷', '機會', '土木系館', '總圖', '機會', '教學館', '城中校區', '體育館', '公館商圈', 
@@ -20,7 +21,7 @@ class LocationScreen(Screen):
     def create_button(self):
         layout = GridLayout(cols=2, padding=50, spacing=1)
         for i in questions.keys():
-            tmp = Button(text=i, font_name='data/DroidSansFallback.ttf')
+            tmp = Button(text=i, font_name=default_font)
             tmp.bind(on_release=partial(self.select_loc, i))
             layout.add_widget(tmp)
         self.add_widget(layout)
@@ -67,8 +68,8 @@ class QuestionScreen(Screen):
 
     def __timeout(self):
         poplayout = BoxLayout(orientation='vertical')
-        lb = Label(text = '時間到!', font_name = 'data/DroidSansFallback.ttf', font_size = 32, size_hint=(1, 0.7))
-        bt = Button(text = '回地圖', font_name = 'data/DroidSansFallback.ttf', font_size = 20, size_hint=(1, 0.3))
+        lb = Label(text = '時間到!', font_name = default_font, font_size = 32, size_hint=(1, 0.7))
+        bt = Button(text = '回地圖', font_name = default_font, font_size = 20, size_hint=(1, 0.3))
         poplayout.add_widget(lb)
         poplayout.add_widget(bt)
         timeoutPop = Popup(title='Time out!', content=poplayout, size_hint = (.6,.5), auto_dismiss=False)
@@ -104,7 +105,7 @@ class QuestionScreen(Screen):
             self.__reset_time()
             self.__cd = Clock.schedule_interval(self.tic, 0.1)
 
-    def callback(self, id):
+    def callback(self, id, ):
         self.__reset_time()
         if id == self.correct_id:
             result = self.manager.get_screen('map').update(self.playerID)    # return [teamId, status, locId]
@@ -126,9 +127,9 @@ class DualScreen(QuestionScreen):
     def __init__(self, **kwargs):
         super(DualScreen, self).__init__(**kwargs)
         self.ids.leftLayout.remove_widget(self.ids.timer)
-        buttons_layout = BoxLayout(orientation = 'horizontal', spacing = 10, padding = 10, size_hint = (1, .1))
-        self.button_dominator = Button(font_size = 24)
-        self.button_challenger = Button(font_size = 24)
+        buttons_layout = BoxLayout(orientation = 'vertical', spacing = 10, padding = 10, size_hint = (1, .2))
+        self.button_dominator = Button(font_size = 32)
+        self.button_challenger = Button(font_size = 32)
         buttons_layout.add_widget(self.button_dominator)
         buttons_layout.add_widget(self.button_challenger)
         self.ids.leftLayout.add_widget(buttons_layout)
@@ -217,7 +218,7 @@ class MapScreen(Screen):
         self.currentPlayer %= 6
         turnPop = Popup(title = 'Next!',
                         content = Label(text = '第{}組的回合!'.format(self.currentPlayer+1),
-                        font_name = 'data/DroidSansFallback.ttf', font_size = 32),
+                        font_name = default_font, font_size = 32),
                         size_hint = (.6,.3))
         Clock.schedule_once(turnPop.dismiss, 1)
         turnPop.open()
@@ -233,14 +234,14 @@ class MapScreen(Screen):
         next_loc = school_locations[self.next_loc_id]
         rulePop = Popup(title = self.diceSum,
                         content = Label(text = '第{}組前進{}格,到{}'.format(self.currentPlayer+1, self.diceSum, next_loc),
-                        font_name = 'data/DroidSansFallback.ttf', font_size = 32),                   
+                        font_name = default_font, font_size = 32),                   
                         size_hint = (.6, .3))
         Clock.schedule_once(rulePop.dismiss, 1)
 
         if gameBroad.blocks[self.next_loc_id].status >= 3:   # the location has been dominated
             dominatePop = Popup(title = '!', 
                         content = Label(text = '{}已經被第{}組永久佔領!'.format(next_loc, gameBroad.blocks[self.next_loc_id].dominator),
-                        font_name = 'data/DroidSansFallback.ttf', font_size = 32),
+                        font_name = default_font, font_size = 32),
                         size_hint = (.6, .3))
             #Clock.schedule_once(dominatePop.dismiss, 1)
             dominatePop.open()

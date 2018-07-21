@@ -19,7 +19,7 @@ class TestApp(App):
         return sm
 
 if __name__ == '__main__':
-    with open ('data/test.kv', 'r', encoding='utf-8') as f:
+    with open ('kv/test.kv', 'r', encoding='utf-8') as f:
         Builder.load_string(f.read())
     f = open('data/questions_v2.csv', 'r', encoding='big5')
     data = f.readlines()
