@@ -8,9 +8,17 @@ class MapScreen(Screen):
     def __init__(self, **kwargs):
         super(MapScreen, self).__init__(**kwargs)
         self.currentPlayer = -1
-
-        self.loc_demo = [0, 0, 0, 0, 0, 0]
+        for i in range(6):
+            self.ids['player_chess_{}'.format(i)].color = colors[i]
+            self.ids['player_chess_{}'.format(i)].rel_pos = get_player_loc(i, gameboard.players[i].current_location)
+        #self.loc_demo = [0, 0, 0, 0, 0, 0]
     
+    def update_chess_on_map(self, dt):
+        for i in range(6):
+            self.loc_demo[i] = (self.loc_demo[i] + randint(0, 2)) % 36
+            self.ids['player_chess_{}'.format(i)].color = colors[i]
+            self.ids['player_chess_{}'.format(i)].rel_pos = get_player_loc(i, self.loc_demo[i])
+
     def enter(self):
         self.currentPlayer += 1
         self.currentPlayer %= 6
@@ -20,17 +28,7 @@ class MapScreen(Screen):
                         size_hint = (.6,.3))
         Clock.schedule_once(turnPop.dismiss, 1)
         turnPop.open()
-
-        for i in range(6):
-            self.ids['player_chess_{}'.format(i)].color = colors[i]
-            self.ids['player_chess_{}'.format(i)].rel_pos = get_player_loc(i, 0)
-
-    def update_chess_demo(self, dt):
-        for i in range(6):
-            self.loc_demo[i] = (self.loc_demo[i] + randint(0, 2)) % 36
-            self.ids['player_chess_{}'.format(i)].color = colors[i]
-            self.ids['player_chess_{}'.format(i)].rel_pos = get_player_loc(i, self.loc_demo[i])
-
+    
     def rollDice(self):
         self.dice1 = randint(1, 6)
         self.dice2 = randint(1, 6)
@@ -45,6 +43,9 @@ class MapScreen(Screen):
                         font_name = default_font, font_size = 32),                   
                         size_hint = (.6, .3))
         Clock.schedule_once(rulePop.dismiss, 1)
+        
+        # update chesses on broad visually
+        self.ids['player_chess_{}'.format(self.currentPlayer)].rel_pos = get_player_loc(self.currentPlayer, self.next_loc_id)
 
         if gameboard.blocks[self.next_loc_id].status >= 3:   # the location has been dominated
             dominatePop = Popup(title = '!', 

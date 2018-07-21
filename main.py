@@ -17,7 +17,7 @@ class TestApp(App):
         sm.add_widget(ResultScreen(name='result'))
         sm.add_widget(EndScreen(name='end'))
 
-        Clock.schedule_interval(sm.get_screen('map').update_chess_demo, 0.25)
+        #Clock.schedule_interval(sm.get_screen('map').update_chess_demo, 0.25)
 
         return sm
 
