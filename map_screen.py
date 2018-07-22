@@ -30,8 +30,8 @@ class MapScreen(Screen):
         turnPop.open()
     
     def rollDice(self):
-        self.dice1 = randint(1, 6)
-        self.dice2 = randint(1, 6)
+        self.dice1 = 6#randint(1, 6)
+        self.dice2 = 6#randint(1, 6)
         self.diceSum = str(self.dice1 + self.dice2)
         Logger.info(self.diceSum)
         # move chess

@@ -1,7 +1,7 @@
 import kivy
 kivy.require('1.10.0')
 import math, time
-from random import randint, shuffle
+from random import randint, shuffle, choice
 from functools import partial
 from kivy.app import App
 from kivy.lang import Builder
@@ -26,7 +26,8 @@ school_locations = ['起點', '校門口', 'N號館', '傅鐘', '校史館', '�
 '118巷', '機會', '土木系館', '總圖', '機會', '教學館', '城中校區', '體育館', '公館商圈', 
 '實驗林場', '臺大農場', '舟山路', '小小福', '二活', '機會', '椰林小舖', '宿舍區', '桃花心木道']
 default_font = 'data/DroidSansFallback.ttf'
-colors = [(1, 0, 0, 1), (1, 1, 0, 1), (0, 1, 0, 1), (0, 1, 1, 1), (0, 0, 1 ,1), (1, 0, 1, 1)]
+colors = [(0.474, 0.874, 0.803, 1), (1, 0.752, 0.752, 1), (1, 0.921, 0.686, 1), 
+        (0.862, 0.772, 0.933, 1), (1, 0.733, 0.552 ,1), (0.6, 0.756, 0.886, 1)]
 questions = {}
 
 def shuffleChoice(choice):
@@ -68,7 +69,7 @@ class PlayerChess(Widget):
     color = ListProperty()
     rel_pos = ObjectProperty({'x': 0, 'y': 0})
 
-    def move():
+    def move(self):
         pass
 
 class player(object):
@@ -116,5 +117,26 @@ def get_player_loc(player_id, block_id):
     x = grid_constants.grid_loc[block_id]['x'] + grid_constants.player_offset[player_id]['x']
     y = grid_constants.grid_loc[block_id]['y'] + grid_constants.player_offset[player_id]['y']
     return {'x': x, 'y': y}
+
+def pick_question_set(questions, location):
+    '''
+        questions are dic of location:[question sets]
+        return a question set of that location
+    '''
+    ret = questions[location]
+    Logger.info(location+' remain '+str(len(ret)))
+    if len(ret) > 0:
+        return ret, location
+    else:
+        q_cnt = 0
+        for i in questions.keys():
+            q_cnt += len(questions[i])
+        if q_cnt == 0:
+            return ret, location
+        new_loc = choice(list(questions.keys()))
+        while len(questions[new_loc]) == 0:
+            new_loc = choice(list(questions.keys()))
+        ret = questions[new_loc]
+        return ret, new_loc
 
 gameboard = board(school_locations)

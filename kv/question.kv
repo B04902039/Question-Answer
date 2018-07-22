@@ -5,6 +5,12 @@
 <QuestionScreen>:
     BoxLayout:
         orientation: 'horizontal'
+        canvas.before:
+            Color:
+                rgba: 0.988, 0.988, 0.988, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
         BoxLayout:
             id: leftLayout
             size_hint: (.2, 1)
@@ -14,29 +20,24 @@
             ChineseLabel:
                 ## the location label
                 canvas.before:
-                    Color: 
-                        ## red orange
-                        rgba: .75, .25, .1, 1
+                    Color:
+                        rgba: 0.392, 0.850, 0.776, 1
                     Rectangle:
                         pos: self.pos
                         size: self.size
                 size_hint: (1, .4)
                 font_size: 24
                 text: root.loc
+                color: 1, 1, 1, 1
                 text_size: self.width, None
                 height: self.texture_size[1]
             Label:
                 id: timer
                 size_hint: (1, .2)
                 text: str(round(root.limit, 1))
-                font_size: 32
+                color: 0.392, 0.850, 0.776, 1
+                font_size: 48
         BoxLayout:
-            canvas:
-                Color: 
-                    rgba: 0, 0, 0, 0.5
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
             size_hint: (.8, 1)
             padding: 10
             spacing: 10
@@ -53,10 +54,12 @@
                 padding: 5
                 spacing: 5
                 ChineseButton:
+                    background_color: 1, 0.811, 0.811, 1
                     text: root.c1
                     on_release:
                         root.callback(0)
                 ChineseButton:
+                    background_color: 1, 0.901, 0.6, 1
                     text: root.c2
                     on_release:
                         root.callback(1)
@@ -65,10 +68,12 @@
                 padding: 5
                 spacing: 5
                 ChineseButton:
+                    background_color: 1, 0.901, 0.6, 1
                     text: root.c3
                     on_release:
                         root.callback(2)
                 ChineseButton:
+                    background_color: 1, 0.811, 0.811, 1 
                     text: root.c4
                     on_release:
                         root.callback(3)

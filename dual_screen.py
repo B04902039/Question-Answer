@@ -10,8 +10,10 @@ class DualScreen(QuestionScreen):
         super(DualScreen, self).__init__(**kwargs)
         self.ids.leftLayout.remove_widget(self.ids.timer)
         buttons_layout = BoxLayout(orientation = 'vertical', spacing = 10, padding = 10, size_hint = (1, .2))
-        self.button_dominator = Button(font_size = 32)
-        self.button_challenger = Button(font_size = 32)
+        self.button_dominator = Button(font_size = 32, background_color=(0.392, 0.850, 0.776, 1), 
+                                        color=(1,1,1,1), background_normal='data/images/white.png')
+        self.button_challenger = Button(font_size = 32, background_color=(0.392, 0.850, 0.776, 1), 
+                                        color=(1,1,1,1), background_normal='data/images/white.png')
         buttons_layout.add_widget(self.button_dominator)
         buttons_layout.add_widget(self.button_challenger)
         self.ids.leftLayout.add_widget(buttons_layout)
@@ -23,7 +25,7 @@ class DualScreen(QuestionScreen):
         self.button_dominator.text = str(self.dominator+1)
         self.button_challenger.on_release = partial(self.set_answerer, self.challenger)
         self.button_dominator.on_release = partial(self.set_answerer, self.dominator)
-        tmp = questions[self.loc]
+        tmp, self.loc = pick_question_set(questions, self.loc)
         if len(tmp) == 0:
             self.Qs = self.c1 = self.c2 = self.c3 = self.c4 = 'Out of questions'
         else:

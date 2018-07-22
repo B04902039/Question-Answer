@@ -52,7 +52,7 @@ class QuestionScreen(Screen):
 
     def update(self):
         global questions    # question asked, delete it
-        tmp = questions[self.loc]
+        tmp, self.loc = pick_question_set(questions, self.loc)
         if len(tmp) == 0:
             self.__reset_time()
             self.Qs = self.c1 = self.c2 = self.c3 = self.c4 = 'Out of questions'

@@ -8,7 +8,6 @@
 #:include kv/question.kv
 
 ## the first charator of custom class must be upper class
-
 <PlayerChess>:
     canvas:
         Color:
@@ -40,10 +39,14 @@
             pos_hint: {'x': 0.5, 'y': 0.25}
             orientation: 'vertical'
             ChineseButton:
+                background_color: .5, .5, .5, 1
+                color: 1, 1, 1, 1
                 text: '確認分數 or 結束遊戲'
                 on_release:
                     root.manager.current = 'end'
             ChineseButton:
+                background_color: .5, .5, .5, 1
+                color: 1, 1, 1, 1
                 text: '擲骰子!'
                 on_release:
                     root.rollDice()
@@ -69,17 +72,16 @@
         orientation: 'vertical'
         padding: 50
         spacing: 10
-        canvas:
+        canvas.before:
             Color:
-                rgba: 0, 0, 0, 0.3
+                rgba: 0.988, 0.988, 0.988, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
         ChineseLabel:
             canvas.before:
                 Color:
-                    ## green background
-                    rgba: 0.15, 0.9, 0.1, 0.5
+                    rgba: 0.392, 0.850, 0.776, 1
                 Rectangle:
                     pos: self.pos
                     size: self.size
@@ -88,6 +90,7 @@
             text_size: self.width, None
         ChineseButton:
             text: '確認結果'
+            background_color: 1, 0.901, 0.6, 1
             size_hint: (1, .2)
             on_release:
                 root.callback()
@@ -97,17 +100,16 @@
         orientation: 'vertical'
         padding: 50
         spacing: 10
-        canvas:
+        canvas.before:
             Color:
-                rgba: 0, 0, 0, 0.3
+                rgba: 0.988, 0.988, 0.988, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
         ChineseLabel:
             canvas.before:
                 Color:
-                    ## red background
-                    rgba: 0.9, 0.1, 0.125, 0.5
+                    rgba: 1, 0.811, 0.811, 1
                 Rectangle:
                     pos: self.pos
                     size: self.size
@@ -116,6 +118,7 @@
             text_size: self.width, None
         ChineseButton:
             text: '回到地圖'
+            background_color: 1, 0.901, 0.6, 1
             size_hint: (1, .2)
             on_release:
                 root.callback()
@@ -125,19 +128,37 @@
         orientation: 'vertical'
         padding: 30
         spacing: 10
+        canvas.before:
+            Color:
+                rgba: 0.392, 0.850, 0.776, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
         ChineseLabel:
-            font_size: 72
+            size_hint: 1, 0.7
+            font_size: 96
+            font_name: 'data/MGentleHK-Light.otf'
+            color: 1, 1, 1, 1
             text: '台大大富翁'
         BoxLayout:
+            size_hint: 1, 0.3
             orientation: 'horizontal'
             padding: 50
             spacing: 30
             ChineseButton:
+                background_color: 1, 0.937, 0.741, 1
                 text: '規則說明'
+                color: 1, 0.607, 0.607, 1
+                font_size: 40
+                font_name: 'data/MBitmapRoundHK-Light.otf'
                 on_release:
                     root.gotoInfo()
             ChineseButton:
+                background_color: 1, 0.607, 0.607, 1
                 text: '開始遊戲'
+                color: 1, 1, 1, 1
+                font_size: 40
+                font_name: 'data/MBitmapRoundHK-Light.otf'
                 on_release:
                     root.startGame()
 
@@ -190,18 +211,34 @@
     BoxLayout:
         orientation: 'vertical'
         padding: 50
+        canvas.before:
+            Color:
+                rgba: 0.988, 0.988, 0.988, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
         ChineseLabel:
+            size_hint:  1, .3
             text: '恭喜第' + str(root.player+1) + '組'
         ChineseLabel:
+            size_hint:  1, .5
             text: root.action + root.location
         BoxLayout:
             orientation: 'horizontal'
+            size_hint:  1, .2
             padding: 30
-            spacing: 10
+            spacing: 30
             ChineseLabel:
+                canvas.before:
+                    Color:
+                        rgba: 1, 0.901, 0.6, 1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
                 text: '目前總分: ' + str(root.score)
             ChineseButton:
                 text: '繼續'
+                background_color: 0.392, 0.850, 0.776, 1
                 on_release:
                     root.callback()
 
@@ -210,6 +247,12 @@
         orientation: 'vertical'
         padding: 30
         spacing: 30
+        canvas.before:
+            Color:
+                rgba: 0.988, 0.988, 0.988, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
         GridLayout:
             size_hint: (1, .8)
             cols: 3
@@ -264,6 +307,7 @@
                 text: '第6組:\n'+ str(root.score6) +'分'
         ChineseButton:
             size_hint: (1, .2)
+            background_color: 0.760, 0.760, 0.760, 1
             text: '回地圖繼續'
             on_release:
                 root.callback()
