@@ -22,36 +22,43 @@ class MapScreen(Screen):
     def enter(self):
         self.currentPlayer += 1
         self.currentPlayer %= 6
-        turnPop = Popup(title = 'Next!',
+        turnPop = Popup(title = 'Next!', size_hint = (.6,.3), 
                         content = Label(text = '第{}組的回合!'.format(self.currentPlayer+1),
-                        font_name = default_font, font_size = 32),
-                        size_hint = (.6,.3))
+                        font_name = default_font, font_size = 32))
         Clock.schedule_once(turnPop.dismiss, 1)
         turnPop.open()
     
     def rollDice(self):
-        self.dice1 = 6#randint(1, 6)
-        self.dice2 = 6#randint(1, 6)
+        self.dice1 = randint(1, 6)
+        self.dice2 = randint(1, 6)
         self.diceSum = str(self.dice1 + self.dice2)
         Logger.info(self.diceSum)
-        # move chess
-        self.moveChess(self.currentPlayer, self.dice1+self.dice2)
+        self.moveChess(self.dice1 + self.dice2)
+    
+    def moveChess(self, steps, loc=-1):
+        if loc == -1:   # move chess relatively
+            gameboard.move_chess(self.currentPlayer, steps)
+        else:
+            gameboard.move_chess_directly(self.currentPlayer, loc)
         self.next_loc_id = gameboard.players[self.currentPlayer].current_location
         next_loc = school_locations[self.next_loc_id]
-        rulePop = Popup(title = self.diceSum,
+        if loc == -1:
+            rulePop = Popup(title = self.diceSum, size_hint = (.6, .3), 
                         content = Label(text = '第{}組前進{}格,到{}'.format(self.currentPlayer+1, self.diceSum, next_loc),
-                        font_name = default_font, font_size = 32),                   
-                        size_hint = (.6, .3))
+                        font_name = default_font, font_size = 32))
+        else:
+            rulePop = Popup(title = 'GO!', size_hint = (.6, .3), 
+                        content = Label(text = '第{}組移動到{}'.format(self.currentPlayer+1, next_loc),
+                        font_name = default_font, font_size = 32))
         Clock.schedule_once(rulePop.dismiss, 1)
         
         # update chesses on broad visually
         self.ids['player_chess_{}'.format(self.currentPlayer)].rel_pos = get_player_loc(self.currentPlayer, self.next_loc_id)
 
         if gameboard.blocks[self.next_loc_id].status >= 3:   # the location has been dominated
-            dominatePop = Popup(title = '!', 
+            dominatePop = Popup(title = '!', size_hint = (.6, .3), 
                         content = Label(text = '{}已經被第{}組永久佔領!'.format(next_loc, gameboard.blocks[self.next_loc_id].dominator+1),
-                        font_name = default_font, font_size = 32),
-                        size_hint = (.6, .3))
+                        font_name = default_font, font_size = 32))
             dominatePop.open()
             dominatePop.on_dismiss = self.enter
             #self.enter()
@@ -62,6 +69,8 @@ class MapScreen(Screen):
                                                                     self.currentPlayer, next_loc))
             else:  # no one dominate the block
                 rulePop.bind(on_dismiss = lambda x: self.startQuestion(self.currentPlayer, next_loc))
+        elif next_loc=='機會':
+            self.manager.current = 'chance'
         else:
             self.enter()
         rulePop.open()
@@ -70,9 +79,6 @@ class MapScreen(Screen):
         # the question is answered correctly, update gameboard
         # return [teamId, status, locId]
         return gameboard.blocks[self.next_loc_id].update(playerID)
-
-    def moveChess(self, player_id, moves):
-        gameboard.move_chess(player_id, moves)
 
     def startQuestion(self, player_id, loc):
         self.manager.get_screen('question').loc = loc
@@ -85,6 +91,7 @@ class MapScreen(Screen):
         Logger.info('challenger:{}, dominator:{}'.format(challenger, dominator))
         self.manager.get_screen('dual').challenger = challenger
         self.manager.get_screen('dual').dominator = dominator
+        #self.manager.get_screen('dual').playerID = challenger
         self.manager.get_screen('dual').loc = loc
         self.manager.get_screen('dual').update()
         self.manager.transition.direction = 'right'

@@ -11,6 +11,7 @@ from kivy.uix.label import Label
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
+from kivy.uix.relativelayout import RelativeLayout
 from kivy.properties import ObjectProperty, StringProperty, NumericProperty, ListProperty, ReferenceListProperty
 from kivy.vector import Vector
 from kivy.logger import Logger
@@ -24,7 +25,7 @@ kivy.resources.resource_add_path('.')
 school_locations = ['起點', '校門口', 'N號館', '傅鐘', '校史館', '行政大樓', '文學院', '機會', 
 '溫州街', '社科院', '小福', '工綜', '農業陳列館', '醉月湖', '水源校區', '機會', '法學院', '活大', 
 '118巷', '機會', '土木系館', '總圖', '機會', '教學館', '城中校區', '體育館', '公館商圈', 
-'實驗林場', '臺大農場', '舟山路', '小小福', '二活', '機會', '椰林小舖', '宿舍區', '桃花心木道']
+'桃花心木道', '學生宿舍', '椰林小舖', '機會', '二活', '小小福', '舟山路', '臺大農場', '實驗林場']
 default_font = 'data/DroidSansFallback.ttf'
 colors = [(0.474, 0.874, 0.803, 1), (1, 0.752, 0.752, 1), (1, 0.921, 0.686, 1), 
         (0.862, 0.772, 0.933, 1), (1, 0.733, 0.552 ,1), (0.6, 0.756, 0.886, 1)]
@@ -80,6 +81,15 @@ class player(object):
         self.id = i
         self.color = colors[self.id]
         self.current_location = 0
+        self.card = {
+            'bonus_time': False,
+            'prior': False,
+            'carry': False,
+            'free_land': False,
+            'TA_help': False, 
+            'permanent_domination': False,
+            'bike': False
+        }
     def __str__(self):
         return str((self.id, self.current_location, self.score))
     def __repr__(self):
@@ -101,6 +111,14 @@ class board(object):
         self.blocks[self.players[player_id].current_location].current_player.remove(player_id)
         self.players[player_id].current_location += moves
         self.players[player_id].current_location %= len(self.blocks)
+        # player arrive on new block
+        self.blocks[self.players[player_id].current_location].current_player.add(player_id)
+        Logger.info(self.players)
+
+    def move_chess_directly(self, player_id, loc):
+        # player on old block leave
+        self.blocks[self.players[player_id].current_location].current_player.remove(player_id)
+        self.players[player_id].current_location = loc
         # player arrive on new block
         self.blocks[self.players[player_id].current_location].current_player.add(player_id)
         Logger.info(self.players)
@@ -138,5 +156,20 @@ def pick_question_set(questions, location):
             new_loc = choice(list(questions.keys()))
         ret = questions[new_loc]
         return ret, new_loc
+
+def chance_card_description(card):
+    description = {
+        'bonus_time': '共筆助攻:\n有了共編，期中期末考就有希望！下次答題免費延長20秒答題',
+        'prior': '對面的sorry:\n下次對決時，獲得優先答題的機會',
+        'carry': '凱瑞組員\n遇到菩薩下凡普渡了！，獲得答題pass卡，下次答題時可交給任一同隊隊友答題，下次作答時使用。',
+        'free_land': '免修大一英文\n不用修大一英文還能拿學分A_A，下次到地點時不用答題即可佔領該地',
+        'TA_help': '助教幫幫忙\n助教才是成績的關鍵！請隊輔答題。指定任意隊輔幫任意隊伍下次抵達景點或是對決時答題，被指定隊伍不得拒絕。',
+        'permanent_domination': '免修\n永久佔領隨機一塊已被隊伍佔領的土地',
+        'bike': '腳踏車\n腳踏車在手，天下任我走，此回合任意移動到喜歡的土地上(然後進行答題或是對決，依抵達的景點而異)'
+    }
+    if card in description.keys():
+        return description[card]
+    else:
+        return 'card description not exist!'
 
 gameboard = board(school_locations)

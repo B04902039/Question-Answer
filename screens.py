@@ -3,28 +3,8 @@ from utils import *
 from question_screen import QuestionScreen
 from dual_screen import DualScreen
 from map_screen import MapScreen
-
-class LocationScreen(Screen):
-    '''
-        location screen (deprecated feature)
-        select the location and switch the questions screen
-    '''
-    def __init__(self, **kwargs):
-        super(LocationScreen, self).__init__(**kwargs)
-    # create button dynamically according to locations in csv
-    def create_button(self):
-        layout = GridLayout(cols=2, padding=50, spacing=1)
-        for i in questions.keys():
-            tmp = Button(text=i, font_name=default_font)
-            tmp.bind(on_release=partial(self.select_loc, i))
-            layout.add_widget(tmp)
-        self.add_widget(layout)
-
-    def select_loc(self, loc, instance):
-        self.manager.get_screen('question').loc = loc
-        self.manager.get_screen('question').update()
-        self.manager.transition.direction = 'right'
-        self.manager.current = 'question'
+from chance_screen import ChanceScreen
+from location_screen import LocationScreen
 
 class CorrectAnswerScreen(Screen):
     description = StringProperty()

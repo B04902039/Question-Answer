@@ -41,7 +41,9 @@ class DualScreen(QuestionScreen):
             self.c2 = self.current_ques[1]
             self.c3 = self.current_ques[2]
             self.c4 = self.current_ques[3]
-            questions[self.loc].remove(questions[self.loc][idx])
+            rm = self.card_effect()
+            if rm == True:
+                questions[self.loc].remove(questions[self.loc][idx])
             # no timer
     
     def callback(self, id):
@@ -55,8 +57,10 @@ class DualScreen(QuestionScreen):
             elif self.playerID == self.dominator:   # dominator answer wrong => challenger win
                 self.set_answerer(self.challenger)
                 result = self.manager.get_screen('map').update(self.playerID)
-                self.manager.get_screen('wrongAnswer').show_result = True
+                correct_answer = self.current_ques[self.correct_id]
                 self.manager.get_screen('result').update(result)
+                self.manager.get_screen('wrongAnswer').show_result = True
+                self.manager.get_screen('wrongAnswer').correct_answer = correct_answer
                 self.manager.get_screen('wrongAnswer').description = self.description
                 self.manager.transition.direction = 'down'
                 self.manager.current = 'wrongAnswer'
@@ -84,3 +88,30 @@ class DualScreen(QuestionScreen):
     def set_answerer(self, player, *args):
         self.flag = True
         self.playerID = player
+    
+    def card_prior(self):
+        def make_popup(text_on_label):
+            pop = Popup(title='Me first!', size_hint = (.8, .3))
+            lab = Label(text=text_on_label, font_name=default_font, font_size=32)
+            pop.content = lab
+            return pop
+        if gameboard.players[self.challenger].card['prior'] == True:
+            pop1 = make_popup('第{}組的機會卡"對面的Sorry"發動:\n獲得優先答題權!'.format(self.challenger+1))
+            gameboard.players[self.challenger].card['prior'] == False
+            pop1.open()
+        if gameboard.players[self.dominator].card['prior'] == True:
+            pop2 = make_popup('第{}組的機會卡"對面的Sorry"發動:\n獲得優先答題權!'.format(self.dominator+1))
+            gameboard.players[self.dominator].card['prior'] == False
+            pop2.open()
+    
+    def card_effect(self):
+        if gameboard.players[self.challenger].card['free_land']:
+            self.card_free_land(self.challenger)
+            return False    # remove the question or not
+        else: 
+            self.card_prior()
+            if gameboard.players[self.dominator].card['carry']:
+                self.card_carry(self.dominator)
+            if gameboard.players[self.challenger].card['carry']:
+                self.card_carry(self.challenger)
+            return True

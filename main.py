@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from screens import *
+from kivy.config import Config
 
 class TestApp(App):
     def build(self):
@@ -11,6 +12,7 @@ class TestApp(App):
         sm.add_widget(ls)
         sm.add_widget(QuestionScreen(name='question'))
         sm.add_widget(DualScreen(name='dual'))
+        sm.add_widget(ChanceScreen(name='chance'))
         ls.create_button()
         sm.add_widget(CorrectAnswerScreen(name='correctAnswer'))
         sm.add_widget(WrongAnswerScreen(name='wrongAnswer'))
@@ -22,6 +24,9 @@ class TestApp(App):
         return sm
 
 if __name__ == '__main__':
+    # disable the left click red dot
+    Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
+
     with open ('kv/test.kv', 'r', encoding='utf-8') as f:
         Builder.load_string(f.read())
     f = open('data/questions_v2.csv', 'r', encoding='big5')
@@ -36,5 +41,7 @@ if __name__ == '__main__':
                 tmp_ls.append(tmp[i*6+1:i*6+7])
             global questions
             questions[tmp[0]] = tmp_ls
-
+    for i in questions.keys():
+        if i not in school_locations:
+            print('Location missed: s', i)
     TestApp().run()
