@@ -97,11 +97,11 @@ class DualScreen(QuestionScreen):
             return pop
         if gameboard.players[self.challenger].card['prior'] == True:
             pop1 = make_popup('第{}組的機會卡"對面的Sorry"發動:\n獲得優先答題權!'.format(self.challenger+1))
-            gameboard.players[self.challenger].card['prior'] == False
+            gameboard.players[self.challenger].card['prior'] = False
             pop1.open()
         if gameboard.players[self.dominator].card['prior'] == True:
             pop2 = make_popup('第{}組的機會卡"對面的Sorry"發動:\n獲得優先答題權!'.format(self.dominator+1))
-            gameboard.players[self.dominator].card['prior'] == False
+            gameboard.players[self.dominator].card['prior'] = False
             pop2.open()
     
     def card_effect(self):

@@ -71,6 +71,8 @@ class MapScreen(Screen):
                 rulePop.bind(on_dismiss = lambda x: self.startQuestion(self.currentPlayer, next_loc))
         elif next_loc=='機會':
             self.manager.current = 'chance'
+        elif next_loc=='起點':
+            self.step_on_start()
         else:
             self.enter()
         rulePop.open()
@@ -96,3 +98,18 @@ class MapScreen(Screen):
         self.manager.get_screen('dual').update()
         self.manager.transition.direction = 'right'
         self.manager.current = 'dual'
+
+    def step_on_start(self):
+        bonus_loc = randint(0, len(school_locations)-1)
+        while gameboard.blocks[bonus_loc].status >= 3 or school_locations[bonus_loc] not in questions.keys():
+            bonus_loc = randint(0, len(school_locations)-1)
+        startPop = Popup(title = 'GO!', size_hint = (.6, .3), 
+                        content = Label(text = '獲得隨機地點:{}答題機會'.format(school_locations[bonus_loc]), 
+                        font_name = default_font, font_size = 32))
+        #Clock.schedule_once(startPop.dismiss, 1)
+        if gameboard.blocks[bonus_loc].status > 0 and gameboard.blocks[bonus_loc].dominator != self.currentPlayer:
+            startPop.bind(on_dismiss = lambda x: self.startDual(gameboard.blocks[bonus_loc].dominator, 
+                                                                self.currentPlayer, school_locations[bonus_loc]))
+        else:  # no one dominate the block
+            startPop.bind(on_dismiss = lambda x: self.startQuestion(self.currentPlayer, school_locations[bonus_loc]))
+        startPop.open()

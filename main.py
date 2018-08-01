@@ -26,6 +26,8 @@ class TestApp(App):
 if __name__ == '__main__':
     # disable the left click red dot
     Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
+    Config.set('graphics', 'width', '1024')
+    Config.set('graphics', 'height', '768')
 
     with open ('kv/test.kv', 'r', encoding='utf-8') as f:
         Builder.load_string(f.read())
