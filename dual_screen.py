@@ -48,6 +48,10 @@ class DualScreen(QuestionScreen):
     
     def callback(self, id):
         if self.flag:
+            # chance card: allpass, answer is always correct this turn
+            if gameboard.players[self.playerID].card['allpass'] == True:
+                id = self.correct_id
+                gameboard.players[self.playerID].card['allpass'] = False
             if id == self.correct_id:   # correct answer
                 result = self.manager.get_screen('map').update(self.playerID)    # return [teamId, status, locId]
                 self.manager.get_screen('result').update(result)
@@ -114,4 +118,13 @@ class DualScreen(QuestionScreen):
                 self.card_carry(self.dominator)
             if gameboard.players[self.challenger].card['carry']:
                 self.card_carry(self.challenger)
+            if gameboard.players[self.challenger].card['allpass']:
+                self.card_allpass(self.challenger)
+            if gameboard.players[self.dominator].card['allpass']:
+                self.card_allpass(self.dominator)
+            if gameboard.players[self.challenger].card['TA_help']:
+                self.card_TA_help(self.challenger)
+            if gameboard.players[self.dominator].card['TA_help']:
+                self.card_TA_help(self.dominator)
+            
             return True

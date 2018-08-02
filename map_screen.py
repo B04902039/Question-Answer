@@ -22,33 +22,58 @@ class MapScreen(Screen):
     def enter(self):
         self.currentPlayer += 1
         self.currentPlayer %= 6
+        # chance card: skip the turn
+        if gameboard.players[self.currentPlayer].card['skip'] == True:
+            label_text = '"停修死線到"\n第{}組暫停一回合!'.format(self.currentPlayer+1)
+        elif gameboard.players[self.currentPlayer].card['sanbao'] == True:
+            label_text = '"三寶出沒"\n第{}組暫停一回合!'.format(self.currentPlayer+1)
+        elif gameboard.players[self.currentPlayer].card['one_step'] == True:
+            label_text = '"早八聯發"\n第{}組此回合只能前進一格!'.format(self.currentPlayer+1)
+        else:
+            label_text = '第{}組的回合!'.format(self.currentPlayer+1)
         turnPop = Popup(title = 'Next!', size_hint = (.6,.3), 
-                        content = Label(text = '第{}組的回合!'.format(self.currentPlayer+1),
+                        content = Label(text = label_text,
                         font_name = default_font, font_size = 32))
         Clock.schedule_once(turnPop.dismiss, 1)
         turnPop.open()
+        if gameboard.players[self.currentPlayer].card['skip'] == True:
+            gameboard.players[self.currentPlayer].card['skip'] = False
+            turnPop.on_dismiss = self.enter
+        elif gameboard.players[self.currentPlayer].card['sanbao'] == True:
+            gameboard.players[self.currentPlayer].card['sanbao'] = False
+            turnPop.on_dismiss = self.enter
     
     def rollDice(self):
         self.dice1 = randint(1, 6)
         self.dice2 = randint(1, 6)
+        if gameboard.players[self.currentPlayer].card['one_step'] == True:
+            self.dice1 = 0
+            self.dice2 = 1
         self.diceSum = str(self.dice1 + self.dice2)
         Logger.info(self.diceSum)
         self.moveChess(self.dice1 + self.dice2)
     
     def moveChess(self, steps, loc=-1):
         if loc == -1:   # move chess relatively
-            gameboard.move_chess(self.currentPlayer, steps)
+            if gameboard.players[self.currentPlayer].card['bike_stolen'] == True:
+                gameboard.move_chess(self.currentPlayer, int(steps/2))
+                self.diceSum = str(int(steps/2))
+            else:
+                gameboard.move_chess(self.currentPlayer, steps)
         else:
             gameboard.move_chess_directly(self.currentPlayer, loc)
         self.next_loc_id = gameboard.players[self.currentPlayer].current_location
         next_loc = school_locations[self.next_loc_id]
         if loc == -1:
-            rulePop = Popup(title = self.diceSum, size_hint = (.6, .3), 
-                        content = Label(text = '第{}組前進{}格,到{}'.format(self.currentPlayer+1, self.diceSum, next_loc),
-                        font_name = default_font, font_size = 32))
+            if gameboard.players[self.currentPlayer].card['bike_stolen'] == True:
+                label_text = '腳踏車被偷QQ,第{}組前進{}格,到{}'.format(self.currentPlayer+1, self.diceSum, next_loc)
+                gameboard.players[self.currentPlayer].card['bike_stolen'] = False
+            else:
+                label_text = '第{}組前進{}格,到{}'.format(self.currentPlayer+1, self.diceSum, next_loc)
         else:
-            rulePop = Popup(title = 'GO!', size_hint = (.6, .3), 
-                        content = Label(text = '第{}組移動到{}'.format(self.currentPlayer+1, next_loc),
+            label_text = '第{}組移動到{}'.format(self.currentPlayer+1, next_loc)
+        rulePop = Popup(title = 'Go!', size_hint = (.6, .3), 
+                        content = Label(text = label_text,
                         font_name = default_font, font_size = 32))
         Clock.schedule_once(rulePop.dismiss, 1)
         

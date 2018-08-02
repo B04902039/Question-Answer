@@ -5,6 +5,7 @@ from dual_screen import DualScreen
 from map_screen import MapScreen
 from chance_screen import ChanceScreen
 from location_screen import LocationScreen
+from chance_choose_team_screen import ChanceChooseTeamScreen
 
 class CorrectAnswerScreen(Screen):
     description = StringProperty()

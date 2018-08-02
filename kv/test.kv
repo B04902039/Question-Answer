@@ -314,6 +314,7 @@
 
 <ChanceScreen>:
     BoxLayout:
+        id: main_box
         orientation: 'vertical'
         spacing: 30
         padding: 50
@@ -336,4 +337,50 @@
             background_color: 1, 0.901, 0.6, 1
             on_release:
                 root.callback()
-            
+    
+<ChanceChooseTeamScreen>:
+    BoxLayout:
+        id: main_box
+        orientation: 'vertical'
+        spacing: 30
+        padding: 50
+        canvas.before:
+            Color:
+                rgba: 0.988, 0.988, 0.988, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        ChineseLabel:
+            size_hint: (1, .2)
+            text: '第'+str(root.currentPlayer+1)+'組的機會卡:'
+        ChineseLabel:
+            size_hint: (1, .65)
+            text: root.description + '\n請選擇組別'
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (1, .15)
+            spacing: 5
+            ChineseButton:
+                text: '第1組'
+                background_color: 1, 0.901, 0.6, 1
+                on_release: root.choose_team(0)
+            ChineseButton:
+                text: '第2組'
+                background_color: 1, 0.901, 0.6, 1
+                on_release: root.choose_team(1)
+            ChineseButton:
+                text: '第3組'
+                background_color: 1, 0.901, 0.6, 1
+                on_release: root.choose_team(2)
+            ChineseButton:
+                text: '第4組'
+                background_color: 1, 0.901, 0.6, 1
+                on_release: root.choose_team(3)
+            ChineseButton:
+                text: '第5組'
+                background_color: 1, 0.901, 0.6, 1
+                on_release: root.choose_team(4)
+            ChineseButton:
+                text: '第6組'
+                background_color: 1, 0.901, 0.6, 1
+                on_release: root.choose_team(5)

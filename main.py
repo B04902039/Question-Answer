@@ -13,6 +13,7 @@ class TestApp(App):
         sm.add_widget(QuestionScreen(name='question'))
         sm.add_widget(DualScreen(name='dual'))
         sm.add_widget(ChanceScreen(name='chance'))
+        sm.add_widget(ChanceChooseTeamScreen(name='chance_choose_team'))
         ls.create_button()
         sm.add_widget(CorrectAnswerScreen(name='correctAnswer'))
         sm.add_widget(WrongAnswerScreen(name='wrongAnswer'))

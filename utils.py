@@ -88,7 +88,13 @@ class player(object):
             'free_land': False,
             'TA_help': False, 
             'permanent_domination': False,
-            'bike': False
+            'bike': False,
+            'bike_stolen': False,
+            'skip': False,
+            'allpass': False,
+            'one_step': False,
+            'sanbao': False,
+            'go_to_start': False
         }
     def __str__(self):
         return str((self.id, self.current_location, self.score))
@@ -161,11 +167,17 @@ def chance_card_description(card):
     description = {
         'bonus_time': '共筆助攻:\n有了共編，期中期末考就有希望！下次答題免費延長20秒答題',
         'prior': '對面的sorry:\n下次對決時，獲得優先答題的機會',
-        'carry': '凱瑞組員\n遇到菩薩下凡普渡了！，獲得答題pass卡，下次答題時可交給任一同隊隊友答題，下次作答時使用。',
-        'free_land': '免修大一英文\n不用修大一英文還能拿學分A_A，下次到地點時不用答題即可佔領該地',
-        'TA_help': '助教幫幫忙\n助教才是成績的關鍵！請隊輔答題。指定任意隊輔幫任意隊伍下次抵達景點或是對決時答題，被指定隊伍不得拒絕。',
-        'permanent_domination': '免修\n永久佔領隨機一塊已被隊伍佔領的土地',
-        'bike': '腳踏車\n腳踏車在手，天下任我走，此回合任意移動到喜歡的土地上(然後進行答題或是對決，依抵達的景點而異)'
+        'carry': '凱瑞組員:\n遇到菩薩下凡普渡了！，獲得答題pass卡，下次答題時可交給任一同隊隊友答題，下次作答時使用。',
+        'free_land': '免修大一英文:\n不用修大一英文還能拿學分A_A，下次到地點時不用答題即可佔領該地',
+        'TA_help': '助教幫幫忙:\n助教才是成績的關鍵！請隊輔答題。指定任意隊輔幫任意隊伍下次抵達景點或是對決時答題，被指定隊伍不得拒絕。',
+        'permanent_domination': '免修:\n永久佔領隨機一塊已被隊伍佔領的土地',
+        'bike': '腳踏車:\n腳踏車在手，天下任我走，此回合任意移動到喜歡的土地上(然後進行答題或是對決，依抵達的景點而異)',
+        'bike_stolen': '腳踏車被偷:\n身為台大人，腳踏車被偷已經見怪不怪ˊ_>ˋ，下一回合移動格數為骰子點數的一半，採無條件捨去法，擲到1不前進',
+        'skip': '停修死線到，期中考太差，不停修會被當QQ\n暫停移動一回合',
+        'allpass': '歐趴糖:\n下次答題無條件答對，也會在對決時發動',
+        'one_step': '早八聯發:\n因為太早起床精神不濟血壓過低沒有力氣，下一回合只能移動一格',
+        'sanbao': '三寶出沒，生人迴避!:\n在椰林大道上被九十度轉彎又不看後方來車的三寶撞QQ，指定一個隊伍暫停一回合',
+        'go_to_start': '重考:\n明年指考等你喔~直接回到起點'
     }
     if card in description.keys():
         return description[card]

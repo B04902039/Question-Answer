@@ -77,6 +77,10 @@ class QuestionScreen(Screen):
 
     def callback(self, id):
         self.__reset_time()
+        # chance card: allpass, answer is always correct this turn
+        if gameboard.players[self.playerID].card['allpass'] == True:
+            id = self.correct_id
+            gameboard.players[self.playerID].card['allpass'] = False
         if id == self.correct_id:
             result = self.manager.get_screen('map').update(self.playerID)    # return [teamId, status, locId]
             self.manager.get_screen('result').update(result)
@@ -106,8 +110,9 @@ class QuestionScreen(Screen):
         carryPop = Popup(title='carry!', size_hint = (.6,.3), 
                         content=Label(text='第{}組的機會卡"凱瑞組員"發動:\n可使任意隊友代為答題!'.format(id+1),
                         font_name = default_font, font_size = 32))
-        carryPop.open()
         gameboard.players[self.playerID].card['carry'] = False
+        self.limit += 1
+        carryPop.open()
     
     def card_free_land(self, id):
         def goto_result(self):
@@ -120,6 +125,21 @@ class QuestionScreen(Screen):
         self.manager.get_screen('result').update(result)
         freePop.on_dismiss = partial(goto_result, self)
         freePop.open()
+    
+    def card_TA_help(self, id):
+        TAPop = Popup(title='TA helps me!', size_hint = (.6,.3), 
+                    content=Label(text='第{}組的狀態"助教幫幫忙"發動:\n請被指定者負責答題!'.format(id+1),
+                    font_name = default_font, font_size = 32))
+        gameboard.players[id].card['TA_help'] = False
+        self.limit += 1
+        TAPop.open()
+
+    def card_allpass(self, id):
+        allpassPop = Popup(title='allpass!', size_hint = (.6,.3), 
+                        content=Label(text='第{}組的機會卡"歐趴糖"發動:\n點任意選項無條件答對!'.format(id+1),
+                        font_name = default_font, font_size = 32))
+        self.limit += 1
+        allpassPop.open()
 
     def card_effect(self):
         if gameboard.players[self.playerID].card['free_land']==True:
@@ -133,6 +153,9 @@ class QuestionScreen(Screen):
                 return True
             if gameboard.players[self.playerID].card['carry']==True:
                 self.card_carry(self.playerID)
-
+            if gameboard.players[self.playerID].card['allpass']==True:
+                self.card_allpass(self.playerID)
+            if gameboard.players[self.playerID].card['TA_help']==True:
+                self.card_TA_help(self.playerID)
             self.start_time()
             return True # remove the question or not
