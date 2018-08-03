@@ -17,6 +17,15 @@
             size: (root.width / 40, root.width / 40)
             source: 'data/images/chess_icon.png'
 
+<BlockStatus>:
+    canvas:
+        Color:
+            rgba: self.color
+        Rectangle:
+            pos: (root.width * self.rel_pos['x'], root.height * self.rel_pos['y'])
+            size: (root.width / 15, root.width / 15)
+            source: root.source_img
+
 <MapScreen>:
     ## pos_hint is from bottom left corner           
     ## size_hint is (width, height)

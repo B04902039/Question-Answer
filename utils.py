@@ -43,6 +43,16 @@ def shuffleChoice(choice):
 def auto_close(my_callback, sec):
     Clock.schedule_once(my_callback, sec)
 
+def get_player_loc(player_id, block_id):
+    x = grid_constants.grid_loc[block_id]['x'] + grid_constants.player_offset[player_id]['x']
+    y = grid_constants.grid_loc[block_id]['y'] + grid_constants.player_offset[player_id]['y']
+    return {'x': x, 'y': y}
+
+def get_block_loc(block_id):
+    x = grid_constants.grid_loc[block_id]['x']
+    y = grid_constants.grid_loc[block_id]['y']
+    return {'x': x, 'y': y}
+
 class block(object):
     location_name = ''
     id = -1
@@ -71,6 +81,13 @@ class PlayerChess(Widget):
     rel_pos = ObjectProperty({'x': 0, 'y': 0})
 
     def move(self):
+        pass
+
+class BlockStatus(Widget):
+    color = ListProperty([1, 1, 1, 0])
+    rel_pos = ObjectProperty({'x': 0, 'y': 0})
+    source_img = StringProperty('')
+    def update(self):
         pass
 
 class player(object):
@@ -136,11 +153,6 @@ class board(object):
             self.players[blk.dominator].score += blk.status
         for i in self.players:
             Logger.info(i)
-
-def get_player_loc(player_id, block_id):
-    x = grid_constants.grid_loc[block_id]['x'] + grid_constants.player_offset[player_id]['x']
-    y = grid_constants.grid_loc[block_id]['y'] + grid_constants.player_offset[player_id]['y']
-    return {'x': x, 'y': y}
 
 def pick_question_set(questions, location):
     '''

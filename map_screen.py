@@ -5,19 +5,29 @@ class MapScreen(Screen):
     dice1 = NumericProperty()
     dice2 = NumericProperty()
     diceSum = StringProperty()
+    domination_status = []
     def __init__(self, **kwargs):
         super(MapScreen, self).__init__(**kwargs)
         self.currentPlayer = -1
         for i in range(6):
             self.ids['player_chess_{}'.format(i)].color = colors[i]
             self.ids['player_chess_{}'.format(i)].rel_pos = get_player_loc(i, gameboard.players[i].current_location)
-        #self.loc_demo = [0, 0, 0, 0, 0, 0]
+        self.init_domination_status()
     
-    def update_chess_on_map(self, dt):
-        for i in range(6):
-            self.loc_demo[i] = (self.loc_demo[i] + randint(0, 2)) % 36
-            self.ids['player_chess_{}'.format(i)].color = colors[i]
-            self.ids['player_chess_{}'.format(i)].rel_pos = get_player_loc(i, self.loc_demo[i])
+    def init_domination_status(self):
+        print('init domination status')
+        for idx in range(len(school_locations)):
+            ds_tmp = BlockStatus(id=f'ds_{idx}')
+            ds_tmp.rel_pos = get_block_loc(idx)
+            self.domination_status.append(ds_tmp)
+            self.add_widget(ds_tmp)
+    
+    def update_domination_status_on_map(self, player_id, block_id, status):
+        self.domination_status[block_id].color = colors[player_id]
+        self.domination_status[block_id].source_img = f'data/images/domination_status_{status}.png'
+
+    def update_chess_on_map(self, player_id, loc_id):
+        self.ids['player_chess_{}'.format(player_id)].rel_pos = get_player_loc(player_id, loc_id)
 
     def enter(self):
         self.currentPlayer += 1
@@ -78,7 +88,7 @@ class MapScreen(Screen):
         Clock.schedule_once(rulePop.dismiss, 1)
         
         # update chesses on broad visually
-        self.ids['player_chess_{}'.format(self.currentPlayer)].rel_pos = get_player_loc(self.currentPlayer, self.next_loc_id)
+        self.update_chess_on_map(self.currentPlayer, self.next_loc_id)
 
         if gameboard.blocks[self.next_loc_id].status >= 3:   # the location has been dominated
             dominatePop = Popup(title = '!', size_hint = (.6, .3), 
@@ -104,8 +114,11 @@ class MapScreen(Screen):
 
     def update(self, playerID):
         # the question is answered correctly, update gameboard
-        # return [teamId, status, locId]
-        return gameboard.blocks[self.next_loc_id].update(playerID)
+        # ret = [teamId, status, locId]
+        ret = gameboard.blocks[self.next_loc_id].update(playerID)
+        # update domination status on broad visually
+        self.update_domination_status_on_map(ret[0], ret[2], ret[1])
+        return ret
 
     def startQuestion(self, player_id, loc):
         self.manager.get_screen('question').loc = loc
