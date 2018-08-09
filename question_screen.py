@@ -18,21 +18,25 @@ class QuestionScreen(Screen):
     c4 = StringProperty()
     __cd = ObjectProperty()
     description = StringProperty()
+    popout_cnt = 0
     def __init__(self, **kwargs):
         super(QuestionScreen, self).__init__(**kwargs)
 
     def tic(self, dt):
-        #Logger.info(str(self.limit))
-        if self.limit > 0.1:
-            self.limit -= 0.1
-        else:
-            self.__cd.cancel()
-            self.__timeout()
+        if self.popout_cnt == 0:
+            if self.limit > 0.1:
+                self.limit -= 0.1
+            else:
+                self.__cd.cancel()
+                self.__timeout()
     
     def back_to_map(self, instance):    # instance is the instance binded with this callback func
         #Logger.info(instance)
         self.manager.get_screen('map').enter()
         self.manager.current = 'map'
+    
+    def decrease_popcnt(self):
+        self.popout_cnt -= 1
 
     def __timeout(self):
         poplayout = BoxLayout(orientation='vertical')
@@ -95,23 +99,28 @@ class QuestionScreen(Screen):
             self.manager.current = 'wrongAnswer'
     
     def start_time(self):
+        if self.__cd:
+            self.__reset_time()
         self.__cd = Clock.schedule_interval(self.tic, 0.1)
 
     def card_bonus_time(self, id):
+        self.popout_cnt += 1
         bonusPop = Popup(title='bonus time!', size_hint = (.6,.3), 
                         content=Label(text='第{}組的機會卡"共筆助攻"發動:\n答題時間延長20秒!'.format(id+1),
                         font_name = default_font, font_size = 32))
-        bonusPop.on_dismiss = self.start_time
+        #bonusPop.on_dismiss = self.start_time
+        bonusPop.on_dismiss = self.decrease_popcnt
         bonusPop.open()
         gameboard.players[self.playerID].card['bonus_time'] = False
         self.limit = 40
     
     def card_carry(self, id):
+        self.popout_cnt += 1
         carryPop = Popup(title='carry!', size_hint = (.6,.3), 
                         content=Label(text='第{}組的機會卡"凱瑞組員"發動:\n可使任意隊友代為答題!'.format(id+1),
                         font_name = default_font, font_size = 32))
         gameboard.players[self.playerID].card['carry'] = False
-        self.limit += 1
+        carryPop.on_dismiss = self.decrease_popcnt
         carryPop.open()
     
     def card_free_land(self, id):
@@ -127,18 +136,20 @@ class QuestionScreen(Screen):
         freePop.open()
     
     def card_TA_help(self, id):
+        self.popout_cnt += 1
         TAPop = Popup(title='TA helps me!', size_hint = (.6,.3), 
                     content=Label(text='第{}組的狀態"助教幫幫忙"發動:\n請被指定者負責答題!'.format(id+1),
                     font_name = default_font, font_size = 32))
         gameboard.players[id].card['TA_help'] = False
-        self.limit += 1
+        TAPop.on_dismiss = self.decrease_popcnt
         TAPop.open()
 
     def card_allpass(self, id):
+        self.popout_cnt += 1
         allpassPop = Popup(title='allpass!', size_hint = (.6,.3), 
                         content=Label(text='第{}組的機會卡"歐趴糖"發動:\n點任意選項無條件答對!'.format(id+1),
                         font_name = default_font, font_size = 32))
-        self.limit += 1
+        allpassPop.on_dismiss = self.decrease_popcnt
         allpassPop.open()
 
     def card_effect(self):
@@ -149,8 +160,6 @@ class QuestionScreen(Screen):
         else:
             if gameboard.players[self.playerID].card['bonus_time']==True:
                 self.card_bonus_time(self.playerID)  # get bonus time
-                # timer already handled in the function
-                return True
             if gameboard.players[self.playerID].card['carry']==True:
                 self.card_carry(self.playerID)
             if gameboard.players[self.playerID].card['allpass']==True:

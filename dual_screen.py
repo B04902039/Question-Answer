@@ -11,9 +11,11 @@ class DualScreen(QuestionScreen):
         self.ids.leftLayout.remove_widget(self.ids.timer)
         buttons_layout = BoxLayout(orientation = 'vertical', spacing = 10, padding = 10, size_hint = (1, .2))
         self.button_dominator = Button(font_size = 32, background_color=(0.392, 0.850, 0.776, 1), 
-                                        color=(1,1,1,1), background_normal='data/images/white.png')
+                                        color=(1,1,1,1), background_normal='data/images/white.png', 
+                                        font_name=default_font)
         self.button_challenger = Button(font_size = 32, background_color=(0.392, 0.850, 0.776, 1), 
-                                        color=(1,1,1,1), background_normal='data/images/white.png')
+                                        color=(1,1,1,1), background_normal='data/images/white.png', 
+                                        font_name=default_font)
         buttons_layout.add_widget(self.button_dominator)
         buttons_layout.add_widget(self.button_challenger)
         self.ids.leftLayout.add_widget(buttons_layout)
@@ -21,8 +23,8 @@ class DualScreen(QuestionScreen):
     def update(self):
         global questions    # question asked, delete it
         self.flag = False
-        self.button_challenger.text = str(self.challenger+1)
-        self.button_dominator.text = str(self.dominator+1)
+        self.button_challenger.text = '挑戰者:' + str(self.challenger+1)
+        self.button_dominator.text = '占領者:' + str(self.dominator+1)
         self.button_challenger.on_release = partial(self.set_answerer, self.challenger)
         self.button_dominator.on_release = partial(self.set_answerer, self.dominator)
         tmp, self.loc = pick_question_set(questions, self.loc)
@@ -68,8 +70,12 @@ class DualScreen(QuestionScreen):
                 self.manager.get_screen('wrongAnswer').description = self.description
                 self.manager.transition.direction = 'down'
                 self.manager.current = 'wrongAnswer'
-            else:   # challenger answer wrong
+            else:   # challenger answer wrong => dominator win
+                self.set_answerer(self.dominator)
+                result = self.manager.get_screen('map').update(self.playerID)
                 correct_answer = self.current_ques[self.correct_id]
+                self.manager.get_screen('result').update(result)
+                self.manager.get_screen('wrongAnswer').show_result = True
                 self.manager.get_screen('wrongAnswer').correct_answer = correct_answer
                 self.manager.get_screen('wrongAnswer').description = self.description
                 self.manager.transition.direction = 'down'

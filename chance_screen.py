@@ -19,7 +19,7 @@ class ChanceScreen(Screen):
             if i[1] == False:
                 possible_card.append(i[0])
         if len(possible_card) > 0:
-            self.drawed_card = choice(['sanbao', 'TA_help'])#choice(possible_card)
+            self.drawed_card = choice(possible_card)
             if self.drawed_card not in no_flag_cards:
                 player_card[self.drawed_card] = True # add to player's card set
             self.description = chance_card_description(self.drawed_card)

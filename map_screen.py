@@ -12,19 +12,20 @@ class MapScreen(Screen):
         for i in range(6):
             self.ids['player_chess_{}'.format(i)].color = colors[i]
             self.ids['player_chess_{}'.format(i)].rel_pos = get_player_loc(i, gameboard.players[i].current_location)
+            self.ids['player_chess_{}'.format(i)].source = 'data/images/chess_icon{}.png'.format(i)
         self.init_domination_status()
     
     def init_domination_status(self):
         print('init domination status')
         for idx in range(len(school_locations)):
-            ds_tmp = BlockStatus(id=f'ds_{idx}')
+            ds_tmp = BlockStatus(id='ds_{}'.format(idx))
             ds_tmp.rel_pos = get_block_loc(idx)
             self.domination_status.append(ds_tmp)
             self.add_widget(ds_tmp)
     
     def update_domination_status_on_map(self, player_id, block_id, status):
         self.domination_status[block_id].color = colors[player_id]
-        self.domination_status[block_id].source_img = f'data/images/domination_status_{status}.png'
+        self.domination_status[block_id].source_img = ('data/images/domination_status{}_{}.png'.format(player_id, status))
 
     def update_chess_on_map(self, player_id, loc_id):
         self.ids['player_chess_{}'.format(player_id)].rel_pos = get_player_loc(player_id, loc_id)
@@ -57,6 +58,7 @@ class MapScreen(Screen):
         self.dice1 = randint(1, 6)
         self.dice2 = randint(1, 6)
         if gameboard.players[self.currentPlayer].card['one_step'] == True:
+            gameboard.players[self.currentPlayer].card['one_step'] == False
             self.dice1 = 0
             self.dice2 = 1
         self.diceSum = str(self.dice1 + self.dice2)
