@@ -176,29 +176,39 @@
         orientation: 'horizontal'
         padding: 30
         spacing: 10
+        canvas.before:
+            Color:
+                rgba: 0.392, 0.850, 0.776, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
         BoxLayout:
             orientation: 'vertical'
             padding: 10
             spacing: 10
             ChineseLabel:
                 ## pink
+                size_hint: (1, .4)
                 canvas.before:
                     Color:
-                        rgba: 0.9, 0.1, 0.9, 0.7
+                        rgba: 1, 0.607, 0.607, 1
                     Rectangle:
                         pos: self.pos
                         size: self.size
-                text: '勝利條件'
+                font_size: 28
+                text: '勝利條件:\n遊戲時間結束時，依佔領景點的加權分數最高之隊伍獲勝！永久佔領的景點加權分數最多喔！衛冕一次的景點次之。'
             ChineseLabel:
-                ## orange
+                size_hint: (1, .4)
                 canvas.before:
                     Color:
-                        rgba: 0.95, 0.6, 0.3, 0.7
+                        rgba: 1, 0.937, 0.741, 1
                     Rectangle:
                         pos: self.pos
                         size: self.size
-                text: '小提示'
+                font_size: 28
+                text: '小提示：\n走到起點，隨機佔領土地（需答題正確），如土地已經被其他隊佔領，則需對決。'
             BoxLayout:
+                size_hint: (1, .2)
                 orientation: 'horizontal'
                 spacing: 10
                 ChineseButton:
@@ -214,7 +224,8 @@
                     on_release:
                         root.startGame()
         ChineseLabel:
-            text: '遊戲規則'
+            font_size: 28
+            text: '遊戲規則：\n1.小隊輪流擲骰子並依點數前進。\n2.至景點回答題目，答對即可佔領該景點。\n3.其他隊抵達該景點時，與原佔領隊決鬥，勝利的小隊佔領該景點。\n     4.兩次衛冕該景點則可永久佔領。衛冕方式為和他隊決鬥勝利或是本隊重抵該景點並答對題目。'
 
 <ResultScreen>:
     BoxLayout:

@@ -89,7 +89,7 @@ class QuestionScreen(Screen):
         if id == self.correct_id:
             if gameboard.players[self.playerID].card['angry_prof'] == True:
                 result = [self.playerID, 4, self.blockID]  # return [teamId, status, locId]
-                gameboard.players[self.playerID].card['angry_prof'] == False
+                gameboard.players[self.playerID].card['angry_prof'] = False
             else:
                 result = self.manager.get_screen('map').update(self.playerID, self.blockID)    # return [teamId, status, locId]
             self.manager.get_screen('result').update(result)
