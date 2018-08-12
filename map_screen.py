@@ -23,14 +23,22 @@ class MapScreen(Screen):
             self.domination_status.append(ds_tmp)
             self.add_widget(ds_tmp)
     
-    def update_domination_status_on_map(self, player_id, block_id, status):
-        self.domination_status[block_id].color = colors[player_id]
-        self.domination_status[block_id].source_img = ('data/images/domination_status{}_{}.png'.format(player_id, status))
+    def update_domination_status_on_map(self):
+        for id, blk in enumerate(gameboard.blocks):
+            dominator = blk.dominator
+            status = blk.status
+            if dominator != -1:
+                self.domination_status[id].color = colors[dominator]
+                self.domination_status[id].source_img = ('data/images/domination_status{}_{}.png'.format(dominator, status))
+            else:
+                self.domination_status[id].color = (1, 1, 1, 0)
+                self.domination_status[id].source_img = ('')
 
     def update_chess_on_map(self, player_id, loc_id):
         self.ids['player_chess_{}'.format(player_id)].rel_pos = get_player_loc(player_id, loc_id)
 
     def enter(self):
+        self.update_domination_status_on_map()
         self.currentPlayer += 1
         self.currentPlayer %= 6
         # chance card: skip the turn
@@ -38,6 +46,8 @@ class MapScreen(Screen):
             label_text = '"停修死線到"\n第{}組暫停一回合!'.format(self.currentPlayer+1)
         elif gameboard.players[self.currentPlayer].card['sanbao'] == True:
             label_text = '"三寶出沒"\n第{}組暫停一回合!'.format(self.currentPlayer+1)
+        elif gameboard.players[self.currentPlayer].card['yellow_ribbon'] == True:
+            label_text = '"黃絲帶運動"\n第{}組暫停一回合!'.format(self.currentPlayer+1)
         elif gameboard.players[self.currentPlayer].card['one_step'] == True:
             label_text = '"早八聯發"\n第{}組此回合只能前進一格!'.format(self.currentPlayer+1)
         else:
@@ -52,6 +62,9 @@ class MapScreen(Screen):
             turnPop.on_dismiss = self.enter
         elif gameboard.players[self.currentPlayer].card['sanbao'] == True:
             gameboard.players[self.currentPlayer].card['sanbao'] = False
+            turnPop.on_dismiss = self.enter
+        elif gameboard.players[self.currentPlayer].card['yellow_ribbon'] == True:
+            gameboard.players[self.currentPlayer].card['yellow_ribbon'] = False
             turnPop.on_dismiss = self.enter
     
     def rollDice(self):
@@ -70,6 +83,9 @@ class MapScreen(Screen):
             if gameboard.players[self.currentPlayer].card['bike_stolen'] == True:
                 gameboard.move_chess(self.currentPlayer, int(steps/2))
                 self.diceSum = str(int(steps/2))
+            elif gameboard.players[self.currentPlayer].card['early_grad'] == True:
+                gameboard.move_chess(self.currentPlayer, steps*2)
+                self.diceSum = str(steps*2)
             else:
                 gameboard.move_chess(self.currentPlayer, steps)
         else:
@@ -80,6 +96,9 @@ class MapScreen(Screen):
             if gameboard.players[self.currentPlayer].card['bike_stolen'] == True:
                 label_text = '腳踏車被偷QQ,第{}組前進{}格,到{}'.format(self.currentPlayer+1, self.diceSum, next_loc)
                 gameboard.players[self.currentPlayer].card['bike_stolen'] = False
+            elif gameboard.players[self.currentPlayer].card['early_grad'] == True:
+                label_text = '提早畢業,第{}組前進{}格,到{}'.format(self.currentPlayer+1, self.diceSum, next_loc)
+                gameboard.players[self.currentPlayer].card['early_grad'] = False
             else:
                 label_text = '第{}組前進{}格,到{}'.format(self.currentPlayer+1, self.diceSum, next_loc)
         else:
@@ -103,9 +122,9 @@ class MapScreen(Screen):
             # other team is the dominator
             if gameboard.blocks[self.next_loc_id].status > 0 and gameboard.blocks[self.next_loc_id].dominator != self.currentPlayer:
                 rulePop.bind(on_dismiss = lambda x: self.startDual(gameboard.blocks[self.next_loc_id].dominator, 
-                                                                    self.currentPlayer, next_loc))
+                                                                    self.currentPlayer, self.next_loc_id, next_loc))
             else:  # no one dominate the block
-                rulePop.bind(on_dismiss = lambda x: self.startQuestion(self.currentPlayer, next_loc))
+                rulePop.bind(on_dismiss = lambda x: self.startQuestion(self.currentPlayer, self.next_loc_id, next_loc))
         elif next_loc=='機會':
             self.manager.current = 'chance'
         elif next_loc=='起點':
@@ -114,26 +133,27 @@ class MapScreen(Screen):
             self.enter()
         rulePop.open()
 
-    def update(self, playerID):
+    def update(self, playerID, blockID):
         # the question is answered correctly, update gameboard
         # ret = [teamId, status, locId]
-        ret = gameboard.blocks[self.next_loc_id].update(playerID)
+        ret = gameboard.blocks[blockID].update(playerID)
         # update domination status on broad visually
-        self.update_domination_status_on_map(ret[0], ret[2], ret[1])
+        self.update_domination_status_on_map()
         return ret
 
-    def startQuestion(self, player_id, loc):
+    def startQuestion(self, player_id, block_id, loc):
         self.manager.get_screen('question').loc = loc
+        self.manager.get_screen('question').blockID = block_id
         self.manager.get_screen('question').playerID = player_id
         self.manager.get_screen('question').update()
         self.manager.transition.direction = 'right'
         self.manager.current = 'question'
 
-    def startDual(self, dominator, challenger, loc):
+    def startDual(self, dominator, challenger, block_id, loc):
         Logger.info('challenger:{}, dominator:{}'.format(challenger, dominator))
         self.manager.get_screen('dual').challenger = challenger
         self.manager.get_screen('dual').dominator = dominator
-        #self.manager.get_screen('dual').playerID = challenger
+        self.manager.get_screen('dual').blockID = block_id
         self.manager.get_screen('dual').loc = loc
         self.manager.get_screen('dual').update()
         self.manager.transition.direction = 'right'
@@ -149,7 +169,7 @@ class MapScreen(Screen):
         #Clock.schedule_once(startPop.dismiss, 1)
         if gameboard.blocks[bonus_loc].status > 0 and gameboard.blocks[bonus_loc].dominator != self.currentPlayer:
             startPop.bind(on_dismiss = lambda x: self.startDual(gameboard.blocks[bonus_loc].dominator, 
-                                                                self.currentPlayer, school_locations[bonus_loc]))
+                                                        self.currentPlayer, bonus_loc, school_locations[bonus_loc]))
         else:  # no one dominate the block
-            startPop.bind(on_dismiss = lambda x: self.startQuestion(self.currentPlayer, school_locations[bonus_loc]))
+            startPop.bind(on_dismiss = lambda x: self.startQuestion(self.currentPlayer, bonus_loc, school_locations[bonus_loc]))
         startPop.open()

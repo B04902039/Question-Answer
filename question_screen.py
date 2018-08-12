@@ -10,6 +10,7 @@ class QuestionScreen(Screen):
     correct_id = NumericProperty()
     limit = NumericProperty(20)
     playerID = NumericProperty()
+    blockID = NumericProperty()
     loc = StringProperty()
     Qs = StringProperty()
     c1 = StringProperty()
@@ -86,7 +87,11 @@ class QuestionScreen(Screen):
             id = self.correct_id
             gameboard.players[self.playerID].card['allpass'] = False
         if id == self.correct_id:
-            result = self.manager.get_screen('map').update(self.playerID)    # return [teamId, status, locId]
+            if gameboard.players[self.playerID].card['angry_prof'] == True:
+                result = [self.playerID, 4, self.blockID]  # return [teamId, status, locId]
+                gameboard.players[self.playerID].card['angry_prof'] == False
+            else:
+                result = self.manager.get_screen('map').update(self.playerID, self.blockID)    # return [teamId, status, locId]
             self.manager.get_screen('result').update(result)
             self.manager.get_screen('correctAnswer').description = self.description
             self.manager.transition.direction = 'up'
@@ -130,7 +135,7 @@ class QuestionScreen(Screen):
                         content=Label(text='第{}組的機會卡"免修大一英文"發動:\n不用答題即可佔領!'.format(id+1),
                         font_name = default_font, font_size = 32))
         gameboard.players[id].card['free_land'] = False
-        result = self.manager.get_screen('map').update(id)    # return [teamId, status, locId]
+        result = self.manager.get_screen('map').update(id, self.blockID)    # return [teamId, status, locId]
         self.manager.get_screen('result').update(result)
         freePop.on_dismiss = partial(goto_result, self)
         freePop.open()
@@ -151,6 +156,14 @@ class QuestionScreen(Screen):
                         font_name = default_font, font_size = 32))
         allpassPop.on_dismiss = self.decrease_popcnt
         allpassPop.open()
+    
+    def card_angry_prof(self, id):
+        self.popout_cnt += 1
+        angryPop = Popup(title='angry prof!', size_hint = (.6,.3), 
+                        content=Label(text='第{}組的機會卡"得罪教授"發動:\n答題正確也無法佔領QQ!'.format(id+1),
+                        font_name = default_font, font_size = 32))
+        angryPop.on_dismiss = self.decrease_popcnt
+        angryPop.open()
 
     def card_effect(self):
         if gameboard.players[self.playerID].card['free_land']==True:
@@ -162,9 +175,11 @@ class QuestionScreen(Screen):
                 self.card_bonus_time(self.playerID)  # get bonus time
             if gameboard.players[self.playerID].card['carry']==True:
                 self.card_carry(self.playerID)
-            if gameboard.players[self.playerID].card['allpass']==True:
-                self.card_allpass(self.playerID)
             if gameboard.players[self.playerID].card['TA_help']==True:
                 self.card_TA_help(self.playerID)
+            if gameboard.players[self.playerID].card['allpass']==True:
+                self.card_allpass(self.playerID)
+            elif gameboard.players[self.playerID].card['angry_prof']==True:
+                self.card_angry_prof(self.playerID)
             self.start_time()
             return True # remove the question or not

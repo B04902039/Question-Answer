@@ -72,6 +72,8 @@ class ResultScreen(Screen):
             self.action = '衛冕'
         elif result[1] == 3:
             self.action = '永久佔領'
+        elif result[1] == 4:
+            self.action = '因為機會卡“得罪教授”而無法佔領'
         self.player = result[0]
         self.location = school_locations[result[2]]
         self.score = gameboard.players[self.player].score

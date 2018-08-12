@@ -22,6 +22,7 @@ import kivy.resources
 import grid_constants
 kivy.resources.resource_add_path('.')
 
+special_locations = {'起點', '機會'}
 school_locations = ['起點', '校門口', 'N號館', '傅鐘', '校史館', '行政大樓', '文學院', '機會', 
 '溫州街', '社科院', '小福', '工綜', '農業陳列館', '醉月湖', '水源校區', '機會', '法學院', '活大', 
 '118巷', '機會', '土木系館', '總圖', '機會', '教學館', '城中校區', '體育館', '公館商圈', 
@@ -111,7 +112,12 @@ class player(object):
             'allpass': False,
             'one_step': False,
             'sanbao': False,
-            'go_to_start': False
+            'go_to_start': False,
+            'thunder': False,
+            'retake': False,
+            'early_grad': False,
+            'angry_prof': False,
+            'yellow_ribbon': False
         }
     def __str__(self):
         return str((self.id, self.current_location, self.score))
@@ -153,6 +159,17 @@ class board(object):
             self.players[blk.dominator].score += blk.status
         for i in self.players:
             Logger.info(i)
+        
+    def thunder(self, id):
+        # remove one of non-perment domination location from team id
+        possible_locs = [x for x in self.blocks if x.dominator==id and x.status<3]
+        if len(possible_locs)==0:
+            return '第{}隊沒有可以被雷的地點QQ'.format(id+1)
+        else:
+            loc = choice(possible_locs)
+            loc.dominator = -1
+            loc.status = 0
+            return '第{}隊失去佔領{}'.format(id+1, loc.location_name)
 
 def pick_question_set(questions, location):
     '''
@@ -189,7 +206,12 @@ def chance_card_description(card):
         'allpass': '歐趴糖:\n下次答題無條件答對，也會在對決時發動',
         'one_step': '早八聯發:\n因為太早起床精神不濟血壓過低沒有力氣，下一回合只能移動一格',
         'sanbao': '三寶出沒，生人迴避!:\n在椰林大道上被九十度轉彎又不看後方來車的三寶撞QQ，指定一個隊伍暫停一回合',
-        'go_to_start': '重考:\n明年指考等你喔~直接回到起點'
+        'go_to_start': '重考:\n明年指考等你喔~直接回到起點',
+        'thunder': '雷組員:\n雷隊友雷到我一個外焦內嫩、心力交瘁、生無可戀......指定一個隊伍失去一個隨機非永久佔領地點(直接指定並使用)',
+        'retake': '重修:\n下次會更好，再抽一張機會命運',
+        'early_grad': '提早畢業:\n學霸如我早早就修完畢業學分了，下回合前進骰子次數*2',
+        'angry_prof': '得罪教授！\n說教授壞話被教授聽到，必修直接被當，下一回合就算答題正確，也無法占領該地點',
+        'yellow_ribbon': '黃絲帶運動:\n黃絲帶運動怎樣我不知道啦，我只知道我趕課被堵住了！暫停移動一回合'
     }
     if card in description.keys():
         return description[card]

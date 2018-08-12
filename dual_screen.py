@@ -5,6 +5,7 @@ class DualScreen(QuestionScreen):
     challenger = NumericProperty(-1)
     dominator = NumericProperty(-1)
     playerID = NumericProperty()    # the answerer
+    blockID = NumericProperty()
     flag = False    # whether player is choisen
     def __init__(self, **kwargs):
         super(DualScreen, self).__init__(**kwargs)
@@ -55,14 +56,18 @@ class DualScreen(QuestionScreen):
                 id = self.correct_id
                 gameboard.players[self.playerID].card['allpass'] = False
             if id == self.correct_id:   # correct answer
-                result = self.manager.get_screen('map').update(self.playerID)    # return [teamId, status, locId]
+                if gameboard.players[self.playerID].card['angry_prof'] == True:
+                    result = [self.playerID, 4, self.blockID]  # return [teamId, status, locId]
+                    gameboard.players[self.playerID].card['angry_prof'] == False
+                else:
+                    result = self.manager.get_screen('map').update(self.playerID, self.blockID)    # return [teamId, status, locId]
                 self.manager.get_screen('result').update(result)
                 self.manager.get_screen('correctAnswer').description = self.description
                 self.manager.transition.direction = 'up'
                 self.manager.current = 'correctAnswer'
             elif self.playerID == self.dominator:   # dominator answer wrong => challenger win
                 self.set_answerer(self.challenger)
-                result = self.manager.get_screen('map').update(self.playerID)
+                result = self.manager.get_screen('map').update(self.playerID, self.blockID)
                 correct_answer = self.current_ques[self.correct_id]
                 self.manager.get_screen('result').update(result)
                 self.manager.get_screen('wrongAnswer').show_result = True
@@ -72,7 +77,7 @@ class DualScreen(QuestionScreen):
                 self.manager.current = 'wrongAnswer'
             else:   # challenger answer wrong => dominator win
                 self.set_answerer(self.dominator)
-                result = self.manager.get_screen('map').update(self.playerID)
+                result = self.manager.get_screen('map').update(self.playerID, self.blockID)
                 correct_answer = self.current_ques[self.correct_id]
                 self.manager.get_screen('result').update(result)
                 self.manager.get_screen('wrongAnswer').show_result = True
@@ -126,11 +131,14 @@ class DualScreen(QuestionScreen):
                 self.card_carry(self.challenger)
             if gameboard.players[self.challenger].card['allpass']:
                 self.card_allpass(self.challenger)
+            elif gameboard.players[self.challenger].card['angry_prof']:
+                self.card_angry_prof(self.challenger)
             if gameboard.players[self.dominator].card['allpass']:
                 self.card_allpass(self.dominator)
+            elif gameboard.players[self.dominator].card['angry_prof']:
+                self.card_angry_prof(self.dominator)
             if gameboard.players[self.challenger].card['TA_help']:
                 self.card_TA_help(self.challenger)
             if gameboard.players[self.dominator].card['TA_help']:
                 self.card_TA_help(self.dominator)
-            
             return True
