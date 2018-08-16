@@ -10,3 +10,10 @@
             source: 'data/images/map_resized.png'
 
 <DualScreen>:
+
+<ChanceCardBG>:
+    ChineseButton:
+        background_normal: 'data/images/chance_bg.png'
+        on_press:
+            root.manager.transition.direction = 'up'
+            root.manager.current = 'chance'

@@ -13,6 +13,7 @@ class TestApp(App):
         sm.add_widget(QuestionScreen(name='question'))
         sm.add_widget(DualScreen(name='dual'))
         sm.add_widget(ChanceScreen(name='chance'))
+        sm.add_widget(ChanceCardBG(name='chanceBG'))
         sm.add_widget(ChanceChooseTeamScreen(name='chance_choose_team'))
         ls.create_button()
         sm.add_widget(CorrectAnswerScreen(name='correctAnswer'))
@@ -32,16 +33,20 @@ if __name__ == '__main__':
 
     with open ('kv/test.kv', 'r', encoding='utf-8') as f:
         Builder.load_string(f.read())
-    f = open('data/questions_v2.csv', 'r', encoding='big5')
+    f = open('data/questions_v3.csv', 'r', encoding='utf8')
     data = f.readlines()
     for row in data:
         tmp = row.split(',')
         tmp_ls = []
         if tmp[0] != '':
             for i in range(100):
-                if tmp[i*6+1] == '':
-                    break
-                tmp_ls.append(tmp[i*6+1:i*6+7])
+                tmp_ques =  tmp[i*6+1:i*6+7]
+                all_empty = True
+                for j in tmp_ques:
+                    if j != '':
+                        all_empty = False
+                if not all_empty and len(tmp_ques)==6:
+                    tmp_ls.append(tmp_ques)
             global questions
             questions[tmp[0]] = tmp_ls
     for i in questions.keys():

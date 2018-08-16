@@ -8,6 +8,7 @@ from location_screen import LocationScreen
 from chance_choose_team_screen import ChanceChooseTeamScreen
 
 class CorrectAnswerScreen(Screen):
+    question = StringProperty()
     description = StringProperty()
     def __init__(self, **kwargs):
         super(CorrectAnswerScreen, self).__init__(**kwargs)
@@ -18,6 +19,7 @@ class CorrectAnswerScreen(Screen):
 
 class WrongAnswerScreen(Screen):
     show_result = False
+    question = StringProperty()
     correct_answer = StringProperty()
     description = StringProperty()
     def __init__(self, **kwargs):
@@ -105,3 +107,7 @@ class EndScreen(Screen):
     
     def callback(self):
         self.manager.current = 'map'
+
+class ChanceCardBG(Screen):
+    def __init__(self, **kwargs):
+        super(ChanceCardBG, self).__init__(**kwargs)

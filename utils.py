@@ -102,7 +102,7 @@ class player(object):
         self.card = {
             'bonus_time': False,
             'prior': False,
-            'carry': False,
+            #'carry': False,
             'free_land': False,
             'TA_help': False, 
             'permanent_domination': False,
@@ -196,7 +196,7 @@ def chance_card_description(card):
     description = {
         'bonus_time': '共筆助攻:\n有了共編，期中期末考就有希望！下次答題免費延長20秒答題',
         'prior': '對面的sorry:\n下次對決時，獲得優先答題的機會',
-        'carry': '凱瑞組員:\n遇到菩薩下凡普渡了！，獲得答題pass卡，下次答題時可交給任一同隊隊友答題，下次作答時使用。',
+        #'carry': '凱瑞組員:\n遇到菩薩下凡普渡了！，獲得答題pass卡，下次答題時可交給任一同隊隊友答題，下次作答時使用。',
         'free_land': '免修大一英文:\n不用修大一英文還能拿學分A_A，下次到地點時不用答題即可佔領該地',
         'TA_help': '助教幫幫忙:\n助教才是成績的關鍵！請隊輔答題。指定任意隊輔幫任意隊伍下次抵達景點或是對決時答題，被指定隊伍及隊輔不得拒絕。',
         'permanent_domination': '免修:\n永久佔領隨機一塊已被隊伍佔領的土地',

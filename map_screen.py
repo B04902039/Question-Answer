@@ -71,7 +71,7 @@ class MapScreen(Screen):
         self.dice1 = randint(1, 6)
         self.dice2 = randint(1, 6)
         if gameboard.players[self.currentPlayer].card['one_step'] == True:
-            gameboard.players[self.currentPlayer].card['one_step'] == False
+            gameboard.players[self.currentPlayer].card['one_step'] = False
             self.dice1 = 0
             self.dice2 = 1
         self.diceSum = str(self.dice1 + self.dice2)
@@ -126,7 +126,7 @@ class MapScreen(Screen):
             else:  # no one dominate the block
                 rulePop.bind(on_dismiss = lambda x: self.startQuestion(self.currentPlayer, self.next_loc_id, next_loc))
         elif next_loc=='機會':
-            self.manager.current = 'chance'
+            self.manager.current = 'chanceBG'
         elif next_loc=='起點':
             self.step_on_start()
         else:

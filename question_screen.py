@@ -67,14 +67,25 @@ class QuestionScreen(Screen):
             idx = randint(0, len(tmp)-1)
             self.Qs = tmp[idx][0]
             self.current_ques = tmp[idx][1:5]
+            for i in range(len(self.current_ques)-1, -1, -1):
+                if self.current_ques[i] == '':
+                    self.current_ques.remove(self.current_ques[i])
             self.description = tmp[idx][-1]
+            self.manager.get_screen('correctAnswer').question = self.Qs
+            self.manager.get_screen('wrongAnswer').question = self.Qs
             self.manager.get_screen('correctAnswer').description = self.description
             self.manager.get_screen('wrongAnswer').description = self.description
             self.correct_id = shuffleChoice(self.current_ques)
-            self.c1 = self.current_ques[0]
-            self.c2 = self.current_ques[1]
-            self.c3 = self.current_ques[2]
-            self.c4 = self.current_ques[3]
+            self.c1 = 'A. ' + self.current_ques[0]
+            self.c2 = 'B. ' + self.current_ques[1]
+            if len(self.current_ques) > 2:
+                self.c3 = 'C. ' + self.current_ques[2]
+            else:
+                self.c3 = ''
+            if len(self.current_ques) > 3:
+                self.c4 = 'D. ' + self.current_ques[3]
+            else:
+                self.c4 = ''
             self.__reset_time()
             rm = self.card_effect()
             if rm == True:  # remove the question or not
@@ -93,12 +104,14 @@ class QuestionScreen(Screen):
             else:
                 result = self.manager.get_screen('map').update(self.playerID, self.blockID)    # return [teamId, status, locId]
             self.manager.get_screen('result').update(result)
+            self.manager.get_screen('correctAnswer').question = self.Qs
             self.manager.get_screen('correctAnswer').description = self.description
             self.manager.transition.direction = 'up'
             self.manager.current = 'correctAnswer'
         else:
             correct_answer = self.current_ques[self.correct_id]
             self.manager.get_screen('wrongAnswer').correct_answer = correct_answer
+            self.manager.get_screen('wrongAnswer').question = self.Qs
             self.manager.get_screen('wrongAnswer').description = self.description
             self.manager.transition.direction = 'down'
             self.manager.current = 'wrongAnswer'
@@ -106,6 +119,9 @@ class QuestionScreen(Screen):
     def start_time(self):
         if self.__cd:
             self.__reset_time()
+        if gameboard.players[self.playerID].card['bonus_time'] == True:
+            gameboard.players[self.playerID].card['bonus_time'] = False
+            self.limit = 40
         self.__cd = Clock.schedule_interval(self.tic, 0.1)
 
     def card_bonus_time(self, id):
@@ -116,8 +132,6 @@ class QuestionScreen(Screen):
         #bonusPop.on_dismiss = self.start_time
         bonusPop.on_dismiss = self.decrease_popcnt
         bonusPop.open()
-        gameboard.players[self.playerID].card['bonus_time'] = False
-        self.limit = 40
     
     def card_carry(self, id):
         self.popout_cnt += 1
@@ -173,8 +187,8 @@ class QuestionScreen(Screen):
         else:
             if gameboard.players[self.playerID].card['bonus_time']==True:
                 self.card_bonus_time(self.playerID)  # get bonus time
-            if gameboard.players[self.playerID].card['carry']==True:
-                self.card_carry(self.playerID)
+            #if gameboard.players[self.playerID].card['carry']==True:
+                #self.card_carry(self.playerID)
             if gameboard.players[self.playerID].card['TA_help']==True:
                 self.card_TA_help(self.playerID)
             if gameboard.players[self.playerID].card['allpass']==True:

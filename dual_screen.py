@@ -36,14 +36,25 @@ class DualScreen(QuestionScreen):
             idx = randint(0, len(tmp)-1)
             self.Qs = tmp[idx][0]
             self.current_ques = tmp[idx][1:5]
+            for i in range(len(self.current_ques)-1, -1, -1):
+                if self.current_ques[i] == '':
+                    self.current_ques.remove(self.current_ques[i])
             self.description = tmp[idx][-1]
+            self.manager.get_screen('correctAnswer').question = self.Qs
             self.manager.get_screen('correctAnswer').description = self.description
+            self.manager.get_screen('wrongAnswer').question = self.Qs
             self.manager.get_screen('wrongAnswer').description = self.description
             self.correct_id = shuffleChoice(self.current_ques)
-            self.c1 = self.current_ques[0]
-            self.c2 = self.current_ques[1]
-            self.c3 = self.current_ques[2]
-            self.c4 = self.current_ques[3]
+            self.c1 = 'A. ' + self.current_ques[0]
+            self.c2 = 'B. ' + self.current_ques[1]
+            if len(self.current_ques) > 2:
+                self.c3 = 'C. ' + self.current_ques[2]
+            else:
+                self.c3 = ''
+            if len(self.current_ques) > 3:
+                self.c4 = 'D. ' + self.current_ques[3]
+            else:
+                self.c4 = ''
             rm = self.card_effect()
             if rm == True:
                 questions[self.loc].remove(questions[self.loc][idx])
@@ -62,6 +73,7 @@ class DualScreen(QuestionScreen):
                 else:
                     result = self.manager.get_screen('map').update(self.playerID, self.blockID)    # return [teamId, status, locId]
                 self.manager.get_screen('result').update(result)
+                self.manager.get_screen('correctAnswer').question = self.Qs
                 self.manager.get_screen('correctAnswer').description = self.description
                 self.manager.transition.direction = 'up'
                 self.manager.current = 'correctAnswer'
@@ -72,6 +84,7 @@ class DualScreen(QuestionScreen):
                 self.manager.get_screen('result').update(result)
                 self.manager.get_screen('wrongAnswer').show_result = True
                 self.manager.get_screen('wrongAnswer').correct_answer = correct_answer
+                self.manager.get_screen('wrongAnswer').question = self.Qs
                 self.manager.get_screen('wrongAnswer').description = self.description
                 self.manager.transition.direction = 'down'
                 self.manager.current = 'wrongAnswer'
@@ -125,10 +138,12 @@ class DualScreen(QuestionScreen):
             return False    # remove the question or not
         else: 
             self.card_prior()
+            '''
             if gameboard.players[self.dominator].card['carry']:
                 self.card_carry(self.dominator)
             if gameboard.players[self.challenger].card['carry']:
                 self.card_carry(self.challenger)
+            '''
             if gameboard.players[self.challenger].card['allpass']:
                 self.card_allpass(self.challenger)
             elif gameboard.players[self.challenger].card['angry_prof']:
