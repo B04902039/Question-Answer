@@ -49,8 +49,8 @@ class MapScreen(Screen):
             turnPop.on_dismiss = self.enter
     
     def rollDice(self):
-        self.dice1 = randint(1, 6)
-        self.dice2 = randint(1, 6)
+        self.dice1 = 0#randint(1, 6)
+        self.dice2 = 0#randint(1, 6)
         if gameboard.players[self.currentPlayer].card['one_step'] == True:
             gameboard.players[self.currentPlayer].card['one_step'] = False
             self.dice1 = 0

@@ -39,6 +39,7 @@ if __name__ == '__main__':
         tmp = row.split(',')
         tmp_ls = []
         if tmp[0] != '':
+            #print(tmp[0])
             for i in range(100):
                 tmp_ques =  tmp[i*6+1:i*6+7]
                 all_empty = True
@@ -49,8 +50,9 @@ if __name__ == '__main__':
                     tmp_ls.append(tmp_ques)
             global questions
             questions[tmp[0]] = tmp_ls
+            #print(tmp_ls)
     for i in questions.keys():
         if i not in school_locations:
-            print('Location missed: s', i)
+            print('Location missed: ', i)
     init_domination_status()
     TestApp().run()
