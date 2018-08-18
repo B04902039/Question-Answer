@@ -100,7 +100,7 @@ class player(object):
     def __init__(self, i):
         self.id = i
         self.color = colors[self.id]
-        self.current_location = 1
+        self.current_location = 0
         self.card = {
             'bonus_time': False,
             'prior': False,
