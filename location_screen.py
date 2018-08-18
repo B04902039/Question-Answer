@@ -8,6 +8,9 @@ class LocationScreen(Screen):
     currentPlayer = NumericProperty(-1)
     def __init__(self, **kwargs):
         super(LocationScreen, self).__init__(**kwargs)
+        for i in domination_status_loc:
+            self.add_widget(i)
+
     # create button dynamically according to locations in csv
     def create_button(self):
         out_layout = RelativeLayout()

@@ -5,7 +5,6 @@ class MapScreen(Screen):
     dice1 = NumericProperty()
     dice2 = NumericProperty()
     diceSum = StringProperty()
-    domination_status = []
     def __init__(self, **kwargs):
         super(MapScreen, self).__init__(**kwargs)
         self.currentPlayer = -1
@@ -13,32 +12,14 @@ class MapScreen(Screen):
             self.ids['player_chess_{}'.format(i)].color = colors[i]
             self.ids['player_chess_{}'.format(i)].rel_pos = get_player_loc(i, gameboard.players[i].current_location)
             self.ids['player_chess_{}'.format(i)].source = 'data/images/chess_icon{}.png'.format(i)
-        self.init_domination_status()
-    
-    def init_domination_status(self):
-        print('init domination status')
-        for idx in range(len(school_locations)):
-            ds_tmp = BlockStatus(id='ds_{}'.format(idx))
-            ds_tmp.rel_pos = get_block_loc(idx)
-            self.domination_status.append(ds_tmp)
-            self.add_widget(ds_tmp)
-    
-    def update_domination_status_on_map(self):
-        for id, blk in enumerate(gameboard.blocks):
-            dominator = blk.dominator
-            status = blk.status
-            if dominator != -1:
-                self.domination_status[id].color = colors[dominator]
-                self.domination_status[id].source_img = ('data/images/domination_status{}_{}.png'.format(dominator, status))
-            else:
-                self.domination_status[id].color = (1, 1, 1, 0)
-                self.domination_status[id].source_img = ('')
+        for i in domination_status_map:
+            self.add_widget(i)
 
     def update_chess_on_map(self, player_id, loc_id):
         self.ids['player_chess_{}'.format(player_id)].rel_pos = get_player_loc(player_id, loc_id)
 
     def enter(self):
-        self.update_domination_status_on_map()
+        update_domination_status_on_map()
         self.currentPlayer += 1
         self.currentPlayer %= 6
         # chance card: skip the turn
@@ -138,7 +119,7 @@ class MapScreen(Screen):
         # ret = [teamId, status, locId]
         ret = gameboard.blocks[blockID].update(playerID)
         # update domination status on broad visually
-        self.update_domination_status_on_map()
+        update_domination_status_on_map()
         return ret
 
     def startQuestion(self, player_id, block_id, loc):

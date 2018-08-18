@@ -31,6 +31,8 @@ default_font = 'data/HuaKangTiFan-CuTi-1.otf'
 colors = [(0.474, 0.874, 0.803, 1), (1, 0.752, 0.752, 1), (1, 0.921, 0.686, 1), 
         (0.862, 0.772, 0.933, 1), (1, 0.733, 0.552 ,1), (0.6, 0.756, 0.886, 1)]
 questions = {}
+domination_status_map = []
+domination_status_loc = []
 
 def shuffleChoice(choice):
     # shuffle the list in place and return the index of the true answer
@@ -124,7 +126,7 @@ class player(object):
     def __repr__(self):
         return str((self.id, self.current_location, self.score))
 
-class board(object):
+class Board(object):
     blocks = []
     players = []
     def __init__(self, locations):
@@ -218,4 +220,29 @@ def chance_card_description(card):
     else:
         return 'card description not exist!'
 
-gameboard = board(school_locations)
+def init_domination_status():
+    print('init domination status')
+    for idx in range(len(school_locations)):
+        ds_tmp = BlockStatus(id='ds_{}'.format(idx))
+        ds_tmp.rel_pos = get_block_loc(idx)
+        ds_tmp2 = BlockStatus(id='ds_{}'.format(idx))
+        ds_tmp2.rel_pos = get_block_loc(idx)
+        domination_status_map.append(ds_tmp)
+        domination_status_loc.append(ds_tmp2)
+    
+def update_domination_status_on_map():
+    for id, blk in enumerate(gameboard.blocks):
+        dominator = blk.dominator
+        status = blk.status
+        if dominator != -1:
+            domination_status_map[id].color = colors[dominator]
+            domination_status_map[id].source_img = ('data/images/domination_status{}_{}.png'.format(dominator, status))
+            domination_status_loc[id].color = colors[dominator]
+            domination_status_loc[id].source_img = ('data/images/domination_status{}_{}.png'.format(dominator, status))
+        else:
+            domination_status_map[id].color = (1, 1, 1, 0)
+            domination_status_map[id].source_img = ('')
+            domination_status_loc[id].color = (1, 1, 1, 0)
+            domination_status_loc[id].source_img = ('')
+
+gameboard = Board(school_locations)

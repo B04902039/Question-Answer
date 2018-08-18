@@ -98,7 +98,7 @@
                 Rectangle:
                     pos: self.pos
                     size: self.size
-            text: str('挑戰成功!\n\n'+root.description)
+            text: str('挑戰成功!\n'+root.description)
             size_hint: (1, .55)
             text_size: self.width, None
         ChineseButton:
@@ -130,7 +130,7 @@
                 Rectangle:
                     pos: self.pos
                     size: self.size
-            text: str('挑戰失敗!\n正確答案是: '+root.correct_answer+'\n\n'+root.description)
+            text: str('挑戰失敗!\n正確答案是: '+root.correct_answer+'\n'+root.description)
             size_hint: (1, .55)
             text_size: self.width, None
         ChineseButton:

@@ -52,4 +52,5 @@ if __name__ == '__main__':
     for i in questions.keys():
         if i not in school_locations:
             print('Location missed: s', i)
+    init_domination_status()
     TestApp().run()
