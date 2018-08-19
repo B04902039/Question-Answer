@@ -50,7 +50,7 @@
             ChineseButton:
                 background_color: .5, .5, .5, 1
                 color: 1, 1, 1, 1
-                text: '確認分數 or 結束遊戲'
+                text: '遊戲成績'
                 on_release:
                     root.manager.current = 'end'
             ChineseButton:
@@ -355,6 +355,7 @@
             Color:
                 rgba: 0.988, 0.988, 0.988, 1
             Rectangle:
+                source: 'data/images/chance_FG.png'
                 pos: self.pos
                 size: self.size
         ChineseLabel:
@@ -365,7 +366,8 @@
             text: root.description
         ChineseButton:
             id: chance_back_btn
-            size_hint: (1, .15)
+            pos_hint: {'center_x':0.5}
+            size_hint: (.5, .15)
             text: root.btn_text
             background_color: 1, 0.901, 0.6, 1
             on_release:

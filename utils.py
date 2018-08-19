@@ -40,7 +40,7 @@ def shuffleChoice(choice):
     shuffle(choice)
     for i, c in enumerate(choice):
         if c == correct:
-            Logger.info('{}, {}'.format(i, c))
+            print('{}, {}'.format(i, c))
             return i
 
 def auto_close(my_callback, sec):
@@ -76,7 +76,7 @@ class block(object):
             self.dominator = player_id
             self.status = 1
         else:
-            Logger.info('{} is dominated by team {}'.format(self.location_name, self.dominator))
+            print('{} is dominated by team {}'.format(self.location_name, self.dominator))
         return [self.dominator, self.status, self.id]
 
 class PlayerChess(Widget):
@@ -144,7 +144,7 @@ class Board(object):
         self.players[player_id].current_location %= len(self.blocks)
         # player arrive on new block
         self.blocks[self.players[player_id].current_location].current_player.add(player_id)
-        Logger.info(self.players)
+        print(self.players)
 
     def move_chess_directly(self, player_id, loc):
         # player on old block leave
@@ -152,7 +152,7 @@ class Board(object):
         self.players[player_id].current_location = loc
         # player arrive on new block
         self.blocks[self.players[player_id].current_location].current_player.add(player_id)
-        Logger.info(self.players)
+        print(self.players)
     
     def updateScore(self):
         for player in self.players:
@@ -160,7 +160,7 @@ class Board(object):
         for blk in self.blocks:
             self.players[blk.dominator].score += blk.status
         for i in self.players:
-            Logger.info(i)
+            print(i)
         
     def thunder(self, id):
         # remove one of non-perment domination location from team id
@@ -179,7 +179,7 @@ def pick_question_set(questions, location):
         return a question set of that location
     '''
     ret = questions[location]
-    Logger.info(location+' remain '+str(len(ret)))
+    print(location+' remain '+str(len(ret)))
     if len(ret) > 0:
         return ret, location
     else:

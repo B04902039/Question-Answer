@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from screens import *
+import sys, datetime
 from kivy.config import Config
 
 class TestApp(App):
@@ -24,6 +25,10 @@ class TestApp(App):
         return sm
 
 if __name__ == '__main__':
+    sys.stdout = open('data/stdout.txt', 'a+')
+    sys.stderr = open('data/stderr.txt', 'a+')
+    sys.stderr.write('#####'+str(datetime.datetime.now())+'#####\n')
+    print('#'*10, datetime.datetime.now(), '#'*10, '\n')
     # disable the left click red dot
     Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
     Config.set('graphics', 'width', '1024')

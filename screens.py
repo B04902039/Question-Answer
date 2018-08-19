@@ -14,7 +14,7 @@ class CorrectAnswerScreen(Screen):
         super(CorrectAnswerScreen, self).__init__(**kwargs)
     
     def callback(self):
-        Logger.info(self.description)
+        print(self.description)
         self.manager.current = 'result'
 
 class WrongAnswerScreen(Screen):
@@ -27,11 +27,11 @@ class WrongAnswerScreen(Screen):
     
     def callback(self):
         if self.show_result:
-            Logger.info(self.description)
+            print(self.description)
             self.show_result = False
             self.manager.current = 'result'
         else:
-            Logger.info(self.description)
+            print(self.description)
             self.manager.get_screen('map').enter()
             self.manager.current = 'map'
 

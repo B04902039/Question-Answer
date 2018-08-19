@@ -56,7 +56,7 @@ class MapScreen(Screen):
             self.dice1 = 0
             self.dice2 = 1
         self.diceSum = str(self.dice1 + self.dice2)
-        Logger.info(self.diceSum)
+        print('player:{}, dice:{}'.format(self.currentPlayer, self.diceSum))
         self.moveChess(self.dice1 + self.dice2)
     
     def moveChess(self, steps, loc=-1):
@@ -131,7 +131,7 @@ class MapScreen(Screen):
         self.manager.current = 'question'
 
     def startDual(self, dominator, challenger, block_id, loc):
-        Logger.info('challenger:{}, dominator:{}'.format(challenger, dominator))
+        print('challenger:{}, dominator:{}'.format(challenger, dominator))
         self.manager.get_screen('dual').challenger = challenger
         self.manager.get_screen('dual').dominator = dominator
         self.manager.get_screen('dual').blockID = block_id
