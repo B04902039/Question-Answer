@@ -45,8 +45,14 @@ class DualScreen(QuestionScreen):
             self.manager.get_screen('wrongAnswer').question = self.Qs
             self.manager.get_screen('wrongAnswer').description = self.description
             self.correct_id = shuffleChoice(self.current_ques)
-            self.c1 = 'A. ' + self.current_ques[0]
-            self.c2 = 'B. ' + self.current_ques[1]
+            if len(self.current_ques) > 0:    
+                self.c1 = 'A. ' + self.current_ques[0]
+            else:
+                self.c1 = ''
+            if len(self.current_ques) > 1:
+                self.c2 = 'B. ' + self.current_ques[1]
+            else:
+                self.c2 = ''
             if len(self.current_ques) > 2:
                 self.c3 = 'C. ' + self.current_ques[2]
             else:

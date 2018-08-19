@@ -21,8 +21,6 @@ class TestApp(App):
         sm.add_widget(ResultScreen(name='result'))
         sm.add_widget(EndScreen(name='end'))
 
-        #Clock.schedule_interval(sm.get_screen('map').update_chess_demo, 0.25)
-
         return sm
 
 if __name__ == '__main__':
@@ -44,13 +42,13 @@ if __name__ == '__main__':
                 tmp_ques =  tmp[i*6+1:i*6+7]
                 all_empty = True
                 for j in tmp_ques:
-                    if j != '':
+                    if j!='' and j!='\n':
                         all_empty = False
                 if not all_empty and len(tmp_ques)==6:
                     tmp_ls.append(tmp_ques)
             global questions
             questions[tmp[0]] = tmp_ls
-            #print(tmp_ls)
+            print('{} has {} questions.'.format(tmp[0], len(tmp_ls)))
     for i in questions.keys():
         if i not in school_locations:
             print('Location missed: ', i)
