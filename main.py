@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
     with open ('kv/test.kv', 'r', encoding='utf-8') as f:
         Builder.load_string(f.read())
-    f = open('data/questions_v3.csv', 'r', encoding='utf8')
+    f = open('data/questions_v4.csv', 'r', encoding='big5')
     data = f.readlines()
     for row in data:
         tmp = row.split(',')

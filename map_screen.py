@@ -36,7 +36,7 @@ class MapScreen(Screen):
         turnPop = Popup(title = 'Next!', size_hint = (.6,.3), 
                         content = Label(text = label_text,
                         font_name = default_font, font_size = 32))
-        Clock.schedule_once(turnPop.dismiss, 1)
+        #Clock.schedule_once(turnPop.dismiss, 1)
         turnPop.open()
         if gameboard.players[self.currentPlayer].card['skip'] == True:
             gameboard.players[self.currentPlayer].card['skip'] = False
@@ -87,7 +87,7 @@ class MapScreen(Screen):
         rulePop = Popup(title = 'Go!', size_hint = (.6, .3), 
                         content = Label(text = label_text,
                         font_name = default_font, font_size = 32))
-        Clock.schedule_once(rulePop.dismiss, 1)
+        #Clock.schedule_once(rulePop.dismiss, 1)
         
         # update chesses on broad visually
         self.update_chess_on_map(self.currentPlayer, self.next_loc_id)
