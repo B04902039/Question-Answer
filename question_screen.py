@@ -121,6 +121,8 @@ class QuestionScreen(Screen):
             self.manager.get_screen('wrongAnswer').description = self.description
             self.manager.transition.direction = 'down'
             self.manager.current = 'wrongAnswer'
+        if gameboard.players[self.playerID].card['angry_prof'] == True: # even if the answer is wrong, card is used
+            gameboard.players[self.playerID].card['angry_prof'] = False
     
     def start_time(self):
         if self.__cd:

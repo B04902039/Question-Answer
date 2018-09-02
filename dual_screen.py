@@ -71,7 +71,8 @@ class DualScreen(QuestionScreen):
             # chance card: allpass, answer is always correct this turn
             if gameboard.players[self.playerID].card['allpass'] == True:
                 id = self.correct_id
-                gameboard.players[self.playerID].card['allpass'] = False
+                gameboard.players[self.challenger].card['allpass'] = False
+                gameboard.players[self.dominator].card['allpass'] = False
             if id == self.correct_id:   # correct answer
                 if gameboard.players[self.playerID].card['angry_prof'] == True:
                     result = [self.playerID, 4, self.blockID]  # return [teamId, status, locId]
@@ -104,6 +105,10 @@ class DualScreen(QuestionScreen):
                 self.manager.get_screen('wrongAnswer').description = self.description
                 self.manager.transition.direction = 'down'
                 self.manager.current = 'wrongAnswer'
+            if gameboard.players[self.dominator].card['angry_prof'] == True: # even if the answer is wrong, card is used
+                gameboard.players[self.dominator].card['angry_prof'] = False
+            if gameboard.players[self.challenger].card['angry_prof'] == True: # even if the answer is wrong, card is used
+                gameboard.players[self.challenger].card['angry_prof'] = False
         else:
             warnPop = Popup(title='warning', size_hint = (.6,.3))
             poplayout = BoxLayout(orientation='vertical')
